@@ -20,10 +20,8 @@ const SERVICE_META = {
 };
 
 const FONT = '"Assistant", "Arial Hebrew", Arial, Tahoma, sans-serif';
-
 const fmt = (n) => `₪${Number(n).toLocaleString('he-IL')}`;
 
-// ─── Shared page shell ────────────────────────────────────────────────────────
 const PAGE = {
   width: '794px',
   backgroundColor: C.white,
@@ -41,18 +39,16 @@ const PAGE = {
 const BlueLine = () => (
   <div style={{ height: '2px', backgroundColor: C.blue, margin: '10px 0 14px' }} />
 );
-
 const ThinLine = () => (
   <div style={{ height: '1px', backgroundColor: C.border, margin: '6px 0' }} />
 );
-
 const SectionLabel = ({ children }) => (
   <div style={{ fontWeight: '700', color: C.blue, fontSize: '11.5px', marginBottom: '6px' }}>
     {children}
   </div>
 );
 
-// ─── Page header (reused on terms page) ──────────────────────────────────────
+// ─── Page header ─────────────────────────────────────────────────────────────
 function PageHeader({ title, subtitle, quoteId }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -81,83 +77,243 @@ function PageHeader({ title, subtitle, quoteId }) {
   );
 }
 
-// ─── Terms content (two pages) ───────────────────────────────────────────────
-const TERMS_SECTIONS = [
-  {
-    heading: 'פירוט השירותים הכלולים:',
-    bullets: [
-      'פיקוח, תיאום ומעקב אחר עבודות הבנייה.',
-      'השלמת התכנון עד קבלת תכניות עבודה מהיועצים ומהקבלנים.',
-      'הפעלת מערך הבטחת האיכות ווידוא שהוגדרו בעלי התפקידים הדרושים.',
-      'זימון ווידוא ביצוע פיקוח עליון ע"י המתכננים.',
-      'בקרה על ביצוע בדיקות מעבדה.',
-      'פיקוח הנדסי על טיב עבודות הבנייה שיבוצעו באתר.',
-      'הפיקוח יהא לפי קצב ההתקדמות ותכולת הביצוע; בכל מקרה תבוצע פגישה באתר אחת לשבוע.',
-      'מעקב אחר התקדמות עבודות הבנייה מול הקבלנ/ים בדרך של קיום ישיבות אתר.',
-      'ניהול פניות הקבלנ/ים לקבלת הבהרות בקשר לתוכניות והמפרטים.',
-      'בדיקת ואישור חשבונות שיוגשו ע"י הקבלנים.',
-      'עריכת חשבונות סופיים.',
+// ─── Terms data per service ───────────────────────────────────────────────────
+const TERMS_DATA = {
+  supervision: {
+    subtitle: 'פיקוח מטעם היזם',
+    sections: [
+      {
+        heading: 'פירוט השירותים הכלולים',
+        bullets: [
+          'פיקוח, תיאום ומעקב אחר עבודות הבנייה.',
+          'השלמת התכנון עד קבלת תכניות עבודה מהיועצים ומהקבלנים.',
+          'הפעלת מערך הבטחת האיכות ווידוא שהוגדרו בעלי התפקידים הדרושים.',
+          'זימון ווידוא ביצוע פיקוח עליון ע"י המתכננים.',
+          'בקרה על ביצוע בדיקות מעבדה.',
+          'פיקוח הנדסי על טיב עבודות הבנייה שיבוצעו באתר.',
+          'הפיקוח יהא לפי קצב ההתקדמות ותכולת הביצוע; בכל מקרה תבוצע פגישה באתר אחת לשבוע.',
+          'מעקב אחר התקדמות עבודות הבנייה מול הקבלנ/ים בדרך של קיום ישיבות אתר.',
+          'ניהול פניות הקבלנ/ים לקבלת הבהרות בקשר לתוכניות והמפרטים.',
+          'בדיקת ואישור חשבונות שיוגשו ע"י הקבלנים.',
+          'עריכת חשבונות סופיים.',
+        ],
+      },
+      {
+        heading: 'שכר טרחה',
+        body: 'בעבור השירותים המפורטים לעיל, שכר הטרחה הנדרש הינו 3.5% (שלושה וחצי אחוזים) מעלויות הפרויקט הכוללות (כולל עלויות התכנון). לסכומים יתווסף מע"מ כחוק.',
+      },
+      {
+        heading: 'אופן תשלום',
+        bullets: [
+          'חלוקה שווה של שכר הטרחה הכולל לחודשים, בהתאם לאומדן זמני התכנון והביצוע; חשבונית תוגש בסוף כל חודש עבודה.',
+          'תשלום שוטף — מתאריך הגשת החשבון.',
+          'התשלום החודשי יעודכן בהתאם להתקדמות הפרויקט ולהתכנסות לעלות הפרויקט הכוללת ולמשך הפרויקט.',
+        ],
+      },
+      {
+        heading: 'הערות',
+        bullets: [
+          'כלל היועצים והמתכננים שיידרשו יחתמו על הסכמים מול המזמין ויועסקו על-ידו.',
+          'תכניות/העתקות יודפסו על חשבון היזם.',
+          'באם הוחלט על סיום התקשרות — יש להודיע חודש מראש.',
+          'הקבלן הנבחר יספק מנהל עבודה מוסמך ומהנדסי ביצוע ככל שיידרש בהסכמים.',
+          'תכולת העבודה כוללת סיוע בקבלת טופס אכלוס/טופס 4; האחריות לאישורים אלו תהיה של הקבלן.',
+        ],
+      },
     ],
   },
-  {
-    heading: 'תנאי השירות — פיקוח מטעם היזם',
-    body: 'בעבור השירותים המפורטים לעיל, שכר הטרחה הנדרש הינו 3.5% מעלויות הפרויקט הכוללות. חלוקה שווה של שכר הטרחה הכולל לחודשים; חשבונית תוגש בסוף כל חודש עבודה. תשלום שוטף.',
-  },
-  {
-    heading: 'הערות',
-    bullets: [
-      'כלל היועצים והמתכננים שיידרשו יחתמו על הסכמים מול המזמין ויועסקו על-ידו.',
-      'תכניות/העתקות יודפסו על חשבון היזם.',
-      'באם הוחלט על סיום התקשרות — יש להודיע חודש מראש.',
-      'הקבלן הנבחר יספק מנהל עבודה מוסמך ומהנדסי ביצוע.',
-      'תכולת העבודה כוללת סיוע בקבלת טופס אכלוס/טופס 4; האחריות לאישורים אלו תהיה של הקבלן.',
-    ],
-  },
-];
 
-function TermsContent() {
+  consulting: {
+    subtitle: 'ייעוץ ותכנון',
+    sections: [
+      {
+        heading: 'תיאום עבודות התכנון לפני הביצוע',
+        bullets: [
+          'לימוד החומר, הכרת המבנים והתשתיות.',
+          'עריכת השוואות הצעות מחיר יועצים ומתכננים וגיוסם לבחירת המזמין.',
+          'הכנת לוח זמנים לתכנון הפרויקט ועדכונו מעת לעת בשיתוף עם המזמין.',
+          'לאחר תכנון ראשוני וקבלת אומדנים — הכנת אומדן לביצוע הפרויקט ועדכונו מעת לעת.',
+          'ניהול התכנון והתיאום בין כלל יועצי ומתכנני הפרויקט, על סמך תכניות שאושרו ע"י המזמין.',
+          'דיווחים על התקדמות התכנון למזמין.',
+          'ניהול קבלת האישורים הדרושים לצורך קבלת היתרי בנייה.',
+        ],
+      },
+      {
+        heading: 'הכנת הצעות והתקשרות עם קבלנים',
+        bullets: [
+          'הכנת וניהול כתב כמויות ומפרטים טכניים ע"י כמאי והמתכננים.',
+          'הכנת רשימת קבלנים פוטנציאליים וניהול סיור קבלנים והפצת חומר המכרז.',
+          'ריכוז שאלות הקבלנים ומתן מענה.',
+          'ניתוח הצעות הקבלנים ועריכת השוואה למזמין, וליווי המו"מ עד בחירת הקבלן הזוכה.',
+        ],
+      },
+      {
+        heading: 'פיקוח, תיאום ומעקב אחר עבודות הבנייה',
+        bullets: [
+          'השלמת התכנון עד קבלת תכניות עבודה מהיועצים ומהקבלנים.',
+          'הפעלת מערך הבטחת האיכות וזימון פיקוח עליון ע"י המתכננים.',
+          'בקרה על ביצוע בדיקות מעבדה ופיקוח הנדסי על טיב העבודות באתר.',
+          'פגישת אתר אחת לשבוע ומעקב אחר התקדמות מול הקבלנ/ים.',
+          'ניהול פניות הקבלנ/ים, בדיקת ואישור חשבונות ועריכת חשבונות סופיים.',
+        ],
+      },
+      {
+        heading: 'שכר טרחה',
+        body: 'בעבור השירותים המפורטים לעיל, שכר הטרחה הנדרש הינו 3.5% (שלושה וחצי אחוזים) מעלויות הפרויקט הכוללות (כולל עלויות התכנון). לסכומים יתווסף מע"מ כחוק.',
+      },
+      {
+        heading: 'אופן תשלום',
+        bullets: [
+          'חלוקה שווה של שכר הטרחה הכולל לחודשים, בהתאם לאומדן זמני התכנון והביצוע; חשבונית תוגש בסוף כל חודש עבודה.',
+          'תשלום שוטף — מתאריך הגשת החשבון.',
+          'התשלום החודשי יעודכן בהתאם להתקדמות הפרויקט ולהתכנסות לעלות הפרויקט הכוללת ולמשך הפרויקט.',
+        ],
+      },
+      {
+        heading: 'הערות',
+        bullets: [
+          'כלל היועצים והמתכננים שיידרשו יחתמו על הסכמים מול המזמין ויועסקו על-ידו.',
+          'תכניות/העתקות יודפסו על חשבון היזם.',
+          'באם הוחלט על סיום התקשרות — יש להודיע חודש מראש.',
+          'הקבלן הנבחר יספק מנהל עבודה מוסמך ומהנדסי ביצוע ככל שיידרש בהסכמים.',
+          'תכולת העבודה כוללת סיוע בקבלת טופס אכלוס/טופס 4; האחריות לאישורים אלו תהיה של הקבלן.',
+        ],
+      },
+    ],
+  },
+
+  management: {
+    subtitle: 'ניהול פרויקט',
+    sections: [
+      {
+        heading: 'ניהול הפרויקט בהיבט הביצועי — ניהול "על"',
+        bullets: [
+          'למידת התכניות, כתבי הכמויות והמפרטים.',
+          'התנהלות מול מזמין העבודה.',
+          'ניהול ומעקב לוחות זמנים בשילוב עם מהנדס הביצוע / מנהל העבודה.',
+          'ישיבות תיאום מול הצוות הפנימי.',
+          'מעקב וליווי אחר חשבונות חלקיים וחשבון סופי.',
+          'מתן מענה ופתרונות לבעיות הצפות ממנהלי העבודה / מהנדסי הביצוע בשטח.',
+          'התנהלות מול מתכננים.',
+          'במידת הצורך — התנהלות מול הרשויות.',
+        ],
+      },
+      {
+        heading: 'שכר טרחה',
+        body: 'בעבור השירותים המפורטים לעיל, שכר הטרחה הנדרש הינו ______ ₪ לכל חודש שירות. בנוסף לשכר הטרחה החודשי הקבוע — תוספת בגובה 5% מכל חשבון חריגים שיאושר. לסכומים יתווסף מע"מ כחוק.',
+      },
+      {
+        heading: 'אופן תשלום',
+        bullets: [
+          'חשבונית תישלח בכל 1 לחודש עבור אותו חודש ביצוע.',
+          'התשלום יבוצע במתכונת שוטף — מתאריך החשבונית.',
+        ],
+      },
+      {
+        heading: 'הערות',
+        bullets: [
+          'באם הוחלט על סיום התקשרות, ע"י מי מהצדדים — יש להודיע חודש מראש.',
+          'נוכחות באתר תהיה לפי צורך; בכל מקרה לא מדובר בשהייה קבועה באתר.',
+          'כמאים, מתכנני לוחות זמנים ושאר יועצים חיצוניים ימומנו ע"י המזמין.',
+          'ביטוחים, חתימות, ערבויות וסידורי בטיחות באתר יהיו באחריות המזמין.',
+          'אין בהצעת מחיר זו לקיחת אחריות בכל הקשור לעיכובים / קנסות.',
+          'המזמין יספק מנהלי עבודה, מהנדסי ביצוע וכו\'.',
+        ],
+      },
+    ],
+  },
+};
+
+// ─── Terms section block (break-inside: avoid) ────────────────────────────────
+function TermsSection({ section }) {
   return (
-    <>
-      {TERMS_SECTIONS.map((s) => (
-        <div key={s.heading} style={{ marginBottom: '18px' }}>
-          <SectionLabel>{s.heading}</SectionLabel>
-          {s.body && (
-            <p style={{ fontSize: '10.5px', color: C.charcoal, lineHeight: '1.75', margin: 0 }}>
-              {s.body}
-            </p>
-          )}
-          {s.bullets && (
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              {s.bullets.map((b, i) => (
-                <li
-                  key={i}
-                  style={{
-                    fontSize: '10.5px',
-                    color: C.charcoal,
-                    lineHeight: '1.75',
-                    paddingRight: '16px',
-                    position: 'relative',
-                  }}
-                >
-                  <span style={{ position: 'absolute', right: 0, color: C.blue, fontWeight: '700' }}>•</span>
-                  {b}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      ))}
-    </>
+    <div
+      style={{
+        marginBottom: '16px',
+        pageBreakInside: 'avoid',
+        breakInside: 'avoid',
+      }}
+    >
+      <SectionLabel>{section.heading}</SectionLabel>
+      {section.body && (
+        <p style={{ fontSize: '10.5px', color: C.charcoal, lineHeight: '1.75', margin: 0 }}>
+          {section.body}
+        </p>
+      )}
+      {section.bullets && (
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+          {section.bullets.map((b, i) => (
+            <li
+              key={i}
+              style={{
+                fontSize: '10.5px',
+                color: C.charcoal,
+                lineHeight: '1.75',
+                paddingRight: '16px',
+                position: 'relative',
+              }}
+            >
+              <span style={{ position: 'absolute', right: 0, color: C.blue, fontWeight: '700' }}>•</span>
+              {b}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
-function PageFooter({ right, left }) {
+// ─── Two signature lines ──────────────────────────────────────────────────────
+function SignatureLines() {
+  const lineStyle = {
+    borderBottom: `1.5px solid ${C.charcoal}`,
+    height: '40px',
+    marginBottom: '8px',
+  };
+  const labelStyle = {
+    textAlign: 'center',
+    fontSize: '10px',
+    color: C.gray,
+    fontWeight: '600',
+  };
   return (
-    <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: '8px', marginTop: '24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: C.gray }}>
-        <span>{left}</span>
-        <span>{right}</span>
+    <div
+      style={{
+        marginTop: '48px',
+        pageBreakInside: 'avoid',
+        breakInside: 'avoid',
+      }}
+    >
+      <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: '28px' }}>
+        <div style={{ display: 'flex', gap: '60px' }}>
+          {/* right: client */}
+          <div style={{ flex: 1 }}>
+            <div style={lineStyle} />
+            <div style={labelStyle}>חתימת הלקוח</div>
+          </div>
+          {/* left: engineer */}
+          <div style={{ flex: 1 }}>
+            <div style={lineStyle} />
+            <div style={labelStyle}>מהנדס טל אביגדורי</div>
+          </div>
+        </div>
       </div>
+    </div>
+  );
+}
+
+// ─── Single terms page per service ───────────────────────────────────────────
+function TermsPage({ serviceId }) {
+  const terms = TERMS_DATA[serviceId];
+  if (!terms) return null;
+  return (
+    <div style={{ pageBreakBefore: 'always', ...PAGE, minHeight: '1123px' }}>
+      <PageHeader title="תנאי השירות" subtitle={terms.subtitle} />
+      <BlueLine />
+      {terms.sections.map((section) => (
+        <TermsSection key={section.heading} section={section} />
+      ))}
+      <SignatureLines />
     </div>
   );
 }
@@ -192,13 +348,14 @@ const QuotePDFTemplate = forwardRef(function QuotePDFTemplate(
     .filter(Boolean)
     .join(' | ');
 
+  const termsServices = selectedServices.filter((id) => TERMS_DATA[id]);
+
   return (
     <div ref={ref} dir="rtl" style={{ fontFamily: FONT, backgroundColor: C.white }}>
 
       {/* ══════════════════════════════════ PAGE 1 — QUOTE ══════════════════════════════════ */}
       <div style={{ ...PAGE, minHeight: '1123px' }}>
 
-        {/* Header */}
         <PageHeader title="הצעת מחיר" quoteId={quoteId} />
         <BlueLine />
 
@@ -231,7 +388,6 @@ const QuotePDFTemplate = forwardRef(function QuotePDFTemplate(
 
         {/* Two-column section */}
         <div style={{ display: 'flex', gap: '14px', marginBottom: '14px' }}>
-          {/* Right 68%: opening text */}
           <div style={{ flex: '68' }}>
             <SectionLabel>לקוח יקר,</SectionLabel>
             <p style={{ fontSize: '10.5px', color: C.charcoal, lineHeight: '1.75', margin: 0 }}>
@@ -240,7 +396,6 @@ const QuotePDFTemplate = forwardRef(function QuotePDFTemplate(
               שלכם. תנאי כל שירות הכלול בהצעה מפורטים בעמודים הנלווים.
             </p>
           </div>
-          {/* Left 32%: company + client */}
           <div
             style={{
               flex: '32',
@@ -284,19 +439,13 @@ const QuotePDFTemplate = forwardRef(function QuotePDFTemplate(
 
         {/* Services table */}
         <SectionLabel>פירוט שירותים</SectionLabel>
-        <table
-          style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10.5px', marginBottom: '18px' }}
-        >
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10.5px', marginBottom: '18px' }}>
           <thead>
             <tr style={{ backgroundColor: C.charcoal, color: C.white }}>
               {['תיאור השירות', 'כמות', 'מחיר ליחידה', 'סה"כ'].map((h, i) => (
                 <th
                   key={h}
-                  style={{
-                    padding: '8px 10px',
-                    fontWeight: '700',
-                    textAlign: i === 0 ? 'right' : 'center',
-                  }}
+                  style={{ padding: '8px 10px', fontWeight: '700', textAlign: i === 0 ? 'right' : 'center' }}
                 >
                   {h}
                 </th>
@@ -320,7 +469,6 @@ const QuotePDFTemplate = forwardRef(function QuotePDFTemplate(
                 </td>
               </tr>
             ))}
-            {/* Subtotal row */}
             <tr style={{ backgroundColor: C.blueBg }}>
               <td colSpan={3} style={{ padding: '8px 10px', textAlign: 'right', fontWeight: '700' }}>
                 סה"כ לפני מע"מ
@@ -334,7 +482,6 @@ const QuotePDFTemplate = forwardRef(function QuotePDFTemplate(
 
         {/* Totals + payment */}
         <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-          {/* Totals block */}
           <div style={{ width: '230px', flexShrink: 0 }}>
             {[
               { label: 'הנחה', pct: '0%', val: fmt(0) + ' -' },
@@ -373,7 +520,6 @@ const QuotePDFTemplate = forwardRef(function QuotePDFTemplate(
             </div>
           </div>
 
-          {/* Payment terms */}
           <div style={{ flex: 1, fontSize: '10.5px' }}>
             <SectionLabel>תנאי תשלום</SectionLabel>
             <p style={{ color: C.gray, lineHeight: '1.75', margin: '0 0 10px' }}>
@@ -390,7 +536,7 @@ const QuotePDFTemplate = forwardRef(function QuotePDFTemplate(
           </div>
         </div>
 
-        {/* Signature */}
+        {/* Page 1 footer / signature area */}
         <div style={{ marginTop: '10px', borderTop: `2px solid ${C.charcoal}`, paddingTop: '12px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px' }}>
             <div>
@@ -419,16 +565,10 @@ const QuotePDFTemplate = forwardRef(function QuotePDFTemplate(
         </div>
       </div>
 
-      {/* ══════════════════════════════════ PAGE 2 — TERMS ══════════════════════════════════ */}
-      <div style={{ pageBreakBefore: 'always', ...PAGE, minHeight: '1123px' }}>
-        <PageHeader title="תנאי השירות" subtitle="TERMS OF SERVICE" />
-        <BlueLine />
-        <TermsContent />
-        <PageFooter
-          right="syncro.co.il · hello@syncro.co.il · 03-0000000"
-          left="SYNCRO · A TALGUY GROUP COMPANY"
-        />
-      </div>
+      {/* ══════════════════════════════════ TERMS PAGES — one per service ══════════════════════════════════ */}
+      {termsServices.map((id) => (
+        <TermsPage key={id} serviceId={id} />
+      ))}
     </div>
   );
 });

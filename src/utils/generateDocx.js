@@ -456,13 +456,159 @@ function buildFooter() {
   });
 }
 
-// ─── PAGE 3 — Terms header (same style as page 1 header) ─────────────────────
-function buildTermsHeader() {
+// ─── Terms data per service ───────────────────────────────────────────────────
+const TERMS_DATA = {
+  supervision: {
+    subtitle: 'פיקוח מטעם היזם',
+    sections: [
+      {
+        heading: 'פירוט השירותים הכלולים',
+        bullets: [
+          'פיקוח, תיאום ומעקב אחר עבודות הבנייה.',
+          'השלמת התכנון עד קבלת תכניות עבודה מהיועצים ומהקבלנים.',
+          'הפעלת מערך הבטחת האיכות ווידוא שהוגדרו בעלי התפקידים הדרושים.',
+          'זימון ווידוא ביצוע פיקוח עליון ע"י המתכננים.',
+          'בקרה על ביצוע בדיקות מעבדה.',
+          'פיקוח הנדסי על טיב עבודות הבנייה שיבוצעו באתר.',
+          'הפיקוח יהא לפי קצב ההתקדמות ותכולת הביצוע; בכל מקרה תבוצע פגישה באתר אחת לשבוע.',
+          'מעקב אחר התקדמות עבודות הבנייה מול הקבלנ/ים בדרך של קיום ישיבות אתר.',
+          'ניהול פניות הקבלנ/ים לקבלת הבהרות בקשר לתוכניות והמפרטים.',
+          'בדיקת ואישור חשבונות שיוגשו ע"י הקבלנים.',
+          'עריכת חשבונות סופיים.',
+        ],
+      },
+      {
+        heading: 'שכר טרחה',
+        body: 'בעבור השירותים המפורטים לעיל, שכר הטרחה הנדרש הינו 3.5% (שלושה וחצי אחוזים) מעלויות הפרויקט הכוללות (כולל עלויות התכנון). לסכומים יתווסף מע"מ כחוק.',
+      },
+      {
+        heading: 'אופן תשלום',
+        bullets: [
+          'חלוקה שווה של שכר הטרחה הכולל לחודשים, בהתאם לאומדן זמני התכנון והביצוע; חשבונית תוגש בסוף כל חודש עבודה.',
+          'תשלום שוטף — מתאריך הגשת החשבון.',
+          'התשלום החודשי יעודכן בהתאם להתקדמות הפרויקט ולהתכנסות לעלות הפרויקט הכוללת ולמשך הפרויקט.',
+        ],
+      },
+      {
+        heading: 'הערות',
+        bullets: [
+          'כלל היועצים והמתכננים שיידרשו יחתמו על הסכמים מול המזמין ויועסקו על-ידו.',
+          'תכניות/העתקות יודפסו על חשבון היזם.',
+          'באם הוחלט על סיום התקשרות — יש להודיע חודש מראש.',
+          'הקבלן הנבחר יספק מנהל עבודה מוסמך ומהנדסי ביצוע ככל שיידרש בהסכמים.',
+          'תכולת העבודה כוללת סיוע בקבלת טופס אכלוס/טופס 4; האחריות לאישורים אלו תהיה של הקבלן.',
+        ],
+      },
+    ],
+  },
+
+  consulting: {
+    subtitle: 'ייעוץ ותכנון',
+    sections: [
+      {
+        heading: 'תיאום עבודות התכנון לפני הביצוע',
+        bullets: [
+          'לימוד החומר, הכרת המבנים והתשתיות.',
+          'עריכת השוואות הצעות מחיר יועצים ומתכננים וגיוסם לבחירת המזמין.',
+          'הכנת לוח זמנים לתכנון הפרויקט ועדכונו מעת לעת בשיתוף עם המזמין.',
+          'לאחר תכנון ראשוני וקבלת אומדנים — הכנת אומדן לביצוע הפרויקט ועדכונו מעת לעת.',
+          'ניהול התכנון והתיאום בין כלל יועצי ומתכנני הפרויקט, על סמך תכניות שאושרו ע"י המזמין.',
+          'דיווחים על התקדמות התכנון למזמין.',
+          'ניהול קבלת האישורים הדרושים לצורך קבלת היתרי בנייה.',
+        ],
+      },
+      {
+        heading: 'הכנת הצעות והתקשרות עם קבלנים',
+        bullets: [
+          'הכנת וניהול כתב כמויות ומפרטים טכניים ע"י כמאי והמתכננים.',
+          'הכנת רשימת קבלנים פוטנציאליים וניהול סיור קבלנים והפצת חומר המכרז.',
+          'ריכוז שאלות הקבלנים ומתן מענה.',
+          'ניתוח הצעות הקבלנים ועריכת השוואה למזמין, וליווי המו"מ עד בחירת הקבלן הזוכה.',
+        ],
+      },
+      {
+        heading: 'פיקוח, תיאום ומעקב אחר עבודות הבנייה',
+        bullets: [
+          'השלמת התכנון עד קבלת תכניות עבודה מהיועצים ומהקבלנים.',
+          'הפעלת מערך הבטחת האיכות וזימון פיקוח עליון ע"י המתכננים.',
+          'בקרה על ביצוע בדיקות מעבדה ופיקוח הנדסי על טיב העבודות באתר.',
+          'פגישת אתר אחת לשבוע ומעקב אחר התקדמות מול הקבלנ/ים.',
+          'ניהול פניות הקבלנ/ים, בדיקת ואישור חשבונות ועריכת חשבונות סופיים.',
+        ],
+      },
+      {
+        heading: 'שכר טרחה',
+        body: 'בעבור השירותים המפורטים לעיל, שכר הטרחה הנדרש הינו 3.5% (שלושה וחצי אחוזים) מעלויות הפרויקט הכוללות (כולל עלויות התכנון). לסכומים יתווסף מע"מ כחוק.',
+      },
+      {
+        heading: 'אופן תשלום',
+        bullets: [
+          'חלוקה שווה של שכר הטרחה הכולל לחודשים, בהתאם לאומדן זמני התכנון והביצוע; חשבונית תוגש בסוף כל חודש עבודה.',
+          'תשלום שוטף — מתאריך הגשת החשבון.',
+          'התשלום החודשי יעודכן בהתאם להתקדמות הפרויקט ולהתכנסות לעלות הפרויקט הכוללת ולמשך הפרויקט.',
+        ],
+      },
+      {
+        heading: 'הערות',
+        bullets: [
+          'כלל היועצים והמתכננים שיידרשו יחתמו על הסכמים מול המזמין ויועסקו על-ידו.',
+          'תכניות/העתקות יודפסו על חשבון היזם.',
+          'באם הוחלט על סיום התקשרות — יש להודיע חודש מראש.',
+          'הקבלן הנבחר יספק מנהל עבודה מוסמך ומהנדסי ביצוע ככל שיידרש בהסכמים.',
+          'תכולת העבודה כוללת סיוע בקבלת טופס אכלוס/טופס 4; האחריות לאישורים אלו תהיה של הקבלן.',
+        ],
+      },
+    ],
+  },
+
+  management: {
+    subtitle: 'ניהול פרויקט',
+    sections: [
+      {
+        heading: 'ניהול הפרויקט בהיבט הביצועי — ניהול "על"',
+        bullets: [
+          'למידת התכניות, כתבי הכמויות והמפרטים.',
+          'התנהלות מול מזמין העבודה.',
+          'ניהול ומעקב לוחות זמנים בשילוב עם מהנדס הביצוע / מנהל העבודה.',
+          'ישיבות תיאום מול הצוות הפנימי.',
+          'מעקב וליווי אחר חשבונות חלקיים וחשבון סופי.',
+          'מתן מענה ופתרונות לבעיות הצפות ממנהלי העבודה / מהנדסי הביצוע בשטח.',
+          'התנהלות מול מתכננים.',
+          'במידת הצורך — התנהלות מול הרשויות.',
+        ],
+      },
+      {
+        heading: 'שכר טרחה',
+        body: 'בעבור השירותים המפורטים לעיל, שכר הטרחה הנדרש הינו ______ ₪ לכל חודש שירות. בנוסף לשכר הטרחה החודשי הקבוע — תוספת בגובה 5% מכל חשבון חריגים שיאושר. לסכומים יתווסף מע"מ כחוק.',
+      },
+      {
+        heading: 'אופן תשלום',
+        bullets: [
+          'חשבונית תישלח בכל 1 לחודש עבור אותו חודש ביצוע.',
+          'התשלום יבוצע במתכונת שוטף — מתאריך החשבונית.',
+        ],
+      },
+      {
+        heading: 'הערות',
+        bullets: [
+          'באם הוחלט על סיום התקשרות, ע"י מי מהצדדים — יש להודיע חודש מראש.',
+          'נוכחות באתר תהיה לפי צורך; בכל מקרה לא מדובר בשהייה קבועה באתר.',
+          'כמאים, מתכנני לוחות זמנים ושאר יועצים חיצוניים ימומנו ע"י המזמין.',
+          'ביטוחים, חתימות, ערבויות וסידורי בטיחות באתר יהיו באחריות המזמין.',
+          'אין בהצעת מחיר זו לקיחת אחריות בכל הקשור לעיכובים / קנסות.',
+          "המזמין יספק מנהלי עבודה, מהנדסי ביצוע וכו'.",
+        ],
+      },
+    ],
+  },
+};
+
+// ─── Terms header ─────────────────────────────────────────────────────────────
+function buildTermsHeader(subtitle) {
   return new Table({
     rows: [
       new TableRow({
         children: [
-          // LEFT: SYNCRO wordmark
           new TableCell({
             borders: NO_BORDER,
             width: { size: 35, type: WidthType.PERCENTAGE },
@@ -472,13 +618,15 @@ function buildTermsHeader() {
               p([run('TERMS OF SERVICE', { size: 16, color: COLOR.gray, allCaps: true })], AlignmentType.LEFT, 0),
             ],
           }),
-          // RIGHT: title
           new TableCell({
             borders: NO_BORDER,
             width: { size: 65, type: WidthType.PERCENTAGE },
             margins: { top: 120, bottom: 120, left: 120, right: 200 },
             children: [
-              p([boldRun('תנאי השירות', 44, COLOR.charcoal)], AlignmentType.RIGHT, 0),
+              p([boldRun('תנאי השירות', 44, COLOR.charcoal)], AlignmentType.RIGHT, 40),
+              subtitle
+                ? p([run(subtitle, { size: 20, color: COLOR.gray })], AlignmentType.RIGHT, 0)
+                : emptyPara(0),
             ],
           }),
         ],
@@ -490,73 +638,92 @@ function buildTermsHeader() {
   });
 }
 
-// ─── Terms content paragraphs ─────────────────────────────────────────────────
-function buildTermsContent() {
-  const TERMS_SECTIONS = [
-    {
-      heading: 'פירוט השירותים הכלולים:',
-      bullets: [
-        'פיקוח, תיאום ומעקב אחר עבודות הבנייה.',
-        'השלמת התכנון עד קבלת תכניות עבודה מהיועצים ומהקבלנים.',
-        'הפעלת מערך הבטחת האיכות ווידוא שהוגדרו בעלי התפקידים הדרושים.',
-        'זימון ווידוא ביצוע פיקוח עליון ע"י המתכננים.',
-        'בקרה על ביצוע בדיקות מעבדה.',
-        'פיקוח הנדסי על טיב עבודות הבנייה שיבוצעו באתר.',
-        'הפיקוח יהא לפי קצב ההתקדמות ותכולת הביצוע; בכל מקרה תבוצע פגישה באתר אחת לשבוע.',
-        'מעקב אחר התקדמות עבודות הבנייה מול הקבלנ/ים בדרך של קיום ישיבות אתר.',
-        'ניהול פניות הקבלנ/ים לקבלת הבהרות בקשר לתוכניות והמפרטים.',
-        'בדיקת ואישור חשבונות שיוגשו ע"י הקבלנים.',
-        'עריכת חשבונות סופיים.',
-      ],
-    },
-    {
-      heading: 'תנאי השירות — פיקוח מטעם היזם',
-      body: 'בעבור השירותים המפורטים לעיל, שכר הטרחה הנדרש הינו 3.5% מעלויות הפרויקט הכוללות. חלוקה שווה של שכר הטרחה הכולל לחודשים; חשבונית תוגש בסוף כל חודש עבודה. תשלום שוטף.',
-      bullets: [],
-    },
-    {
-      heading: 'הערות',
-      bullets: [
-        'כלל היועצים והמתכננים שיידרשו יחתמו על הסכמים מול המזמין ויועסקו על-ידו.',
-        'תכניות/העתקות יודפסו על חשבון היזם.',
-        'באם הוחלט על סיום התקשרות — יש להודיע חודש מראש.',
-        'הקבלן הנבחר יספק מנהל עבודה מוסמך ומהנדסי ביצוע.',
-        'תכולת העבודה כוללת סיוע בקבלת טופס אכלוס/טופס 4; האחריות לאישורים אלו תהיה של הקבלן.',
-      ],
-    },
-  ];
+// ─── Terms paragraphs for one service ────────────────────────────────────────
+function buildServiceTerms(serviceId) {
+  const terms = TERMS_DATA[serviceId];
+  if (!terms) return [];
 
   const result = [];
 
-  for (const section of TERMS_SECTIONS) {
-    // Section heading
+  for (const section of terms.sections) {
+    const bullets = section.bullets || [];
+    const lastIdx = bullets.length - 1;
+
+    // Heading — keepNext keeps it glued to first bullet/body
     result.push(
       new Paragraph({
         children: [run(section.heading, { bold: true, size: 22, color: COLOR.blue })],
         alignment: AlignmentType.RIGHT,
         bidirectional: true,
-        spacing: { before: 280, after: 120 },
+        spacing: { before: 280, after: 100 },
+        keepNext: true,
       })
     );
 
     if (section.body) {
-      result.push(p([run(section.body, { size: 20, color: COLOR.charcoal })], AlignmentType.RIGHT, 120));
+      result.push(
+        new Paragraph({
+          children: [run(section.body, { size: 20, color: COLOR.charcoal })],
+          alignment: AlignmentType.RIGHT,
+          bidirectional: true,
+          spacing: { after: 120 },
+        })
+      );
     }
 
-    for (const bullet of section.bullets) {
+    bullets.forEach((bullet, i) => {
       result.push(
         new Paragraph({
           children: [run(`• ${bullet}`, { size: 20, color: COLOR.charcoal })],
           alignment: AlignmentType.RIGHT,
           bidirectional: true,
-          spacing: { after: 100 },
+          spacing: { after: 80 },
           indent: { right: 200 },
+          keepNext: i < lastIdx,
         })
       );
-    }
+    });
   }
 
   return result;
+}
+
+// ─── Signature lines table ────────────────────────────────────────────────────
+function buildSignatureLines() {
+  const lineCell = (label) =>
+    new TableCell({
+      borders: NO_BORDER,
+      width: { size: 50, type: WidthType.PERCENTAGE },
+      margins: { top: 0, bottom: 0, left: 300, right: 300 },
+      children: [
+        new Paragraph({
+          children: [],
+          alignment: AlignmentType.CENTER,
+          bidirectional: true,
+          border: { bottom: { color: COLOR.charcoal, size: 8, style: BorderStyle.SINGLE } },
+          spacing: { before: 0, after: 120 },
+        }),
+        p(
+          [run(label, { size: 18, color: COLOR.gray, bold: true })],
+          AlignmentType.CENTER,
+          0
+        ),
+      ],
+    });
+
+  return new Table({
+    rows: [
+      new TableRow({
+        children: [
+          lineCell('חתימת הלקוח'),
+          lineCell('מהנדס טל אביגדורי'),
+        ],
+      }),
+    ],
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    layout: TableLayoutType.FIXED,
+    borders: NO_BORDER,
+  });
 }
 
 // ─── Separator line ───────────────────────────────────────────────────────────
@@ -646,21 +813,23 @@ export async function generateQuoteDocx(formData) {
           buildFooter(),
 
           // ══════════════════════════════════════════════
-          //  PAGE 3 — TERMS OF SERVICE
+          //  TERMS PAGES — one per selected service
           // ══════════════════════════════════════════════
-          new Paragraph({ children: [new PageBreak()], bidirectional: true }),
-
-          // Terms header (mirrors page 1 header)
-          buildTermsHeader(),
-          emptyPara(120),
-          buildSeparator(),
-
-          // Terms body
-          ...buildTermsContent(),
-
-          emptyPara(200),
-          buildSeparator(),
-          buildFooter(),
+          ...selectedServices
+            .filter((id) => TERMS_DATA[id])
+            .flatMap((id) => {
+              const terms = TERMS_DATA[id];
+              return [
+                new Paragraph({ children: [new PageBreak()], bidirectional: true }),
+                buildTermsHeader(terms.subtitle),
+                emptyPara(120),
+                buildSeparator(),
+                ...buildServiceTerms(id),
+                emptyPara(400),
+                buildSeparator(),
+                buildSignatureLines(),
+              ];
+            }),
         ],
       },
     ],

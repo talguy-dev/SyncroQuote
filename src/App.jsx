@@ -67,12 +67,19 @@ export default function App() {
 
   const handleGenerate = () => setShowSuccess(true);
 
+  const handleReset = () => {
+    setFormData({});
+    setScreenIndex(0);
+    setDirection('forward');
+    setShowSuccess(false);
+  };
+
   if (showSuccess) {
     return (
       <div className="flex flex-col flex-1">
         <Header />
         <div className="flex-1 flex flex-col">
-          <Step5_Success data={formData} />
+          <Step5_Success data={formData} onReset={handleReset} />
         </div>
       </div>
     );

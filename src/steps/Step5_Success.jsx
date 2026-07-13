@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { generateQuoteDocx } from '../utils/generateDocx';
 
-export default function Step5_Success({ data }) {
+export default function Step5_Success({ data, onReset }) {
   const [phase, setPhase] = useState('generating');
   const [error, setError]  = useState(null);
 
@@ -93,6 +93,19 @@ export default function Step5_Success({ data }) {
           <p className="text-xs" style={{ color: '#9ca3af' }}>
             הקובץ כולל הצעת מחיר + תנאי שירות מלאים
           </p>
+
+          <button
+            onClick={onReset}
+            className="w-full py-3 rounded-xl text-sm font-semibold transition-all"
+            style={{
+              border: '2px solid #e2e5ed',
+              color: '#6b7280',
+              backgroundColor: '#f9fafb',
+              minHeight: '48px',
+            }}
+          >
+            + צור הצעת מחיר חדשה
+          </button>
         </div>
       )}
     </div>

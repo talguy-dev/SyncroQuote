@@ -96,7 +96,13 @@ export function Screen1_2({ data, setData, onNext, onBack, direction }) {
 
 // ── 1.3 ──────────────────────────────────────────────────────────────────────
 export function Screen1_3({ data, setData, onNext, onBack, direction }) {
-  const valid = data.projectType && data.location?.trim() && data.size?.trim();
+  const typeIsOther = data.projectType === 'אחר';
+  const valid =
+    data.projectType &&
+    (!typeIsOther || data.projectTypeOther?.trim()) &&
+    data.location?.trim() &&
+    data.size?.trim();
+
   return (
     <StepCard direction={direction}>
       <StepHeading title="פרטי הפרויקט" />
@@ -104,7 +110,9 @@ export function Screen1_3({ data, setData, onNext, onBack, direction }) {
         <ChipSelect
           options={PROJECT_TYPES}
           value={data.projectType || null}
-          onChange={(v) => setData({ ...data, projectType: v })}
+          onChange={(v) => setData({ ...data, projectType: v, projectTypeOther: '' })}
+          otherValue={data.projectTypeOther || ''}
+          onOtherChange={(v) => setData({ ...data, projectTypeOther: v })}
         />
       </Field>
       <Field label="מיקום הפרויקט">

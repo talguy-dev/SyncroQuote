@@ -18,14 +18,30 @@ export default function Step2_Services({ data, setData, onNext, onBack, directio
   const meta = SERVICE_META[serviceId] || {};
   const answers = data.serviceAnswers || {};
   const currentVal = answers[q.id];
+  const otherText  = answers[`${q.id}_other`] || '';
 
-  const updateAnswer = (val) => {
+  const updateAnswer = (val) =>
     setData({ ...data, serviceAnswers: { ...answers, [q.id]: val } });
-  };
 
-  const isValid = q.type === 'chips_with_text'
-    ? !!currentVal?.option && (currentVal.option !== q.textFieldIfOption || currentVal.text?.trim())
-    : !!currentVal;
+  const updateOtherText = (text) =>
+    setData({ ...data, serviceAnswers: { ...answers, [`${q.id}_other`]: text } });
+
+  // Validation: if "אחר" is selected, require the free-text field to be filled
+  const isOtherSelected = q.type === 'chips'
+    ? currentVal === 'אחר'
+    : currentVal?.option === 'אחר';
+
+  const isValid = (() => {
+    if (q.type === 'chips_with_text') {
+      return (
+        !!currentVal?.option &&
+        (currentVal.option !== q.textFieldIfOption || currentVal.text?.trim())
+      );
+    }
+    if (!currentVal) return false;
+    if (isOtherSelected && q.options?.includes('אחר')) return otherText.trim().length > 0;
+    return true;
+  })();
 
   return (
     <StepCard direction={direction}>
@@ -51,6 +67,8 @@ export default function Step2_Services({ data, setData, onNext, onBack, directio
           options={q.options}
           value={currentVal || null}
           onChange={updateAnswer}
+          otherValue={otherText}
+          onOtherChange={updateOtherText}
         />
       )}
 

@@ -69,23 +69,24 @@ export default function App() {
 
   if (showSuccess) {
     return (
-      <div className="min-h-screen">
+      <div className="flex flex-col flex-1">
         <Header />
-        <main className="max-w-2xl mx-auto px-4 py-8">
+        <div className="flex-1 flex flex-col">
           <Step5_Success data={formData} />
-        </main>
+        </div>
       </div>
     );
   }
 
+  const props = {
+    data: formData,
+    setData: setFormData,
+    onNext: goNext,
+    onBack: goBack,
+    direction,
+  };
+
   const renderScreen = () => {
-    const props = {
-      data: formData,
-      setData: setFormData,
-      onNext: goNext,
-      onBack: goBack,
-      direction,
-    };
     switch (current?.type) {
       case 'step1_1': return <Screen1_1 {...props} />;
       case 'step1_2': return <Screen1_2 {...props} />;
@@ -108,40 +109,45 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col flex-1">
       <Header />
-      <div className="max-w-2xl mx-auto">
-        <ProgressBar
-          current={screenIndex + 1}
-          total={total}
-          label={getScreenLabel(current)}
-        />
-        <main className="px-4 py-6">
-          {renderScreen()}
-        </main>
-      </div>
+      <ProgressBar
+        current={screenIndex + 1}
+        total={total}
+        label={getScreenLabel(current)}
+      />
+      <main className="flex-1 px-4 py-5 overflow-y-auto">
+        {renderScreen()}
+      </main>
     </div>
   );
 }
 
 function Header() {
   return (
-    <header style={{ backgroundColor: '#101218' }} className="text-white px-6 py-4">
-      <div className="max-w-2xl mx-auto flex items-center justify-between">
-        <div className="flex flex-col items-end gap-0.5">
-          <span className="text-base font-bold tracking-wide">SYNCRO</span>
-          <span className="text-[10px] tracking-widest uppercase" style={{ color: '#9ca3af' }}>
-            Engineering Intelligence
-          </span>
-        </div>
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#4175fc' }}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <rect x="2" y="2" width="5" height="5" rx="1" fill="white" />
-            <rect x="9" y="2" width="5" height="5" rx="1" fill="white" opacity="0.6" />
-            <rect x="2" y="9" width="5" height="5" rx="1" fill="white" opacity="0.6" />
-            <rect x="9" y="9" width="5" height="5" rx="1" fill="white" />
-          </svg>
-        </div>
+    <header
+      className="flex items-center justify-between px-5 py-3.5 shrink-0"
+      style={{ backgroundColor: '#101218' }}
+    >
+      <div
+        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+        style={{ backgroundColor: '#4175fc' }}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="2" y="2" width="5" height="5" rx="1" fill="white" />
+          <rect x="9" y="2" width="5" height="5" rx="1" fill="white" opacity="0.6" />
+          <rect x="2" y="9" width="5" height="5" rx="1" fill="white" opacity="0.6" />
+          <rect x="9" y="9" width="5" height="5" rx="1" fill="white" />
+        </svg>
+      </div>
+      <div className="flex flex-col items-end gap-0.5">
+        <span className="text-sm font-bold tracking-wide text-white">SYNCRO</span>
+        <span
+          className="text-[9px] tracking-widest uppercase"
+          style={{ color: '#9ca3af' }}
+        >
+          Engineering Intelligence
+        </span>
       </div>
     </header>
   );

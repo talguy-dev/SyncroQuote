@@ -1,6 +1,7 @@
 import StepCard from '../components/StepCard';
 import NavButtons from '../components/NavButtons';
 import ChipSelect from '../components/ChipSelect';
+import { SERVICES } from '../data/flowConfig';
 
 const PROJECT_TYPES = ['מגורים', 'מסחרי', 'תעשייתי', 'ציבורי / מוסדי', 'מלונאות', 'תשתית', 'אחר'];
 const PROJECT_STAGES = [
@@ -12,70 +13,93 @@ const PROJECT_STAGES = [
   'בסיום ביצוע',
 ];
 
-function Field({ label, children }) {
+function Label({ children }) {
   return (
-    <div className="mb-5">
-      <label className="block text-sm font-semibold text-gray-700 mb-1.5">{label}</label>
+    <label className="block text-xs font-semibold mb-1.5" style={{ color: '#6b7280' }}>
       {children}
-    </div>
+    </label>
   );
 }
 
-function Input({ value, onChange, placeholder, type = 'text' }) {
+function TextInput({ value, onChange, placeholder, type = 'text' }) {
   return (
     <input
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 text-sm outline-none focus:border-[#4175fc] transition-colors"
+      className="w-full rounded-xl text-sm outline-none transition-all"
+      style={{
+        padding: '13px 14px',
+        border: '2px solid #e2e5ed',
+        backgroundColor: '#fafbff',
+        minHeight: '48px',
+        fontSize: '16px', // prevents iOS zoom
+      }}
+      onFocus={(e) => { e.target.style.borderColor = '#4175fc'; }}
+      onBlur={(e)  => { e.target.style.borderColor = '#e2e5ed'; }}
     />
   );
 }
 
-// ── Screen 1.1: Name & Company ──
+function Field({ label, children }) {
+  return (
+    <div className="mb-4">
+      <Label>{label}</Label>
+      {children}
+    </div>
+  );
+}
+
+function StepHeading({ title, sub }) {
+  return (
+    <div className="mb-5">
+      <h2 className="text-lg font-bold" style={{ color: '#101218' }}>{title}</h2>
+      {sub && <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>{sub}</p>}
+    </div>
+  );
+}
+
+// ── 1.1 ──────────────────────────────────────────────────────────────────────
 export function Screen1_1({ data, setData, onNext, direction }) {
   const valid = data.fullName?.trim() && data.company?.trim();
   return (
     <StepCard direction={direction}>
-      <h2 className="text-xl font-bold text-[#101218] mb-1">בואו נתחיל 👋</h2>
-      <p className="text-sm text-gray-500 mb-6">ספרו לנו מי אתם</p>
+      <StepHeading title="בואו נתחיל 👋" sub="ספרו לנו מי אתם" />
       <Field label="שם מלא">
-        <Input value={data.fullName || ''} onChange={(v) => setData({ ...data, fullName: v })} placeholder="ישראל ישראלי" />
+        <TextInput value={data.fullName || ''} onChange={(v) => setData({ ...data, fullName: v })} placeholder="ישראל ישראלי" />
       </Field>
       <Field label="חברה / ארגון">
-        <Input value={data.company || ''} onChange={(v) => setData({ ...data, company: v })} placeholder="שם החברה" />
+        <TextInput value={data.company || ''} onChange={(v) => setData({ ...data, company: v })} placeholder="שם החברה" />
       </Field>
       <NavButtons onNext={onNext} nextDisabled={!valid} showBack={false} />
     </StepCard>
   );
 }
 
-// ── Screen 1.2: Phone & Email ──
+// ── 1.2 ──────────────────────────────────────────────────────────────────────
 export function Screen1_2({ data, setData, onNext, onBack, direction }) {
   const valid = data.phone?.trim() && data.email?.trim();
   return (
     <StepCard direction={direction}>
-      <h2 className="text-xl font-bold text-[#101218] mb-1">פרטי התקשרות</h2>
-      <p className="text-sm text-gray-500 mb-6">כך נוכל ליצור איתכם קשר</p>
+      <StepHeading title="פרטי התקשרות" sub="כך נוכל ליצור איתכם קשר" />
       <Field label="טלפון">
-        <Input value={data.phone || ''} onChange={(v) => setData({ ...data, phone: v })} placeholder="050-0000000" type="tel" />
+        <TextInput value={data.phone || ''} onChange={(v) => setData({ ...data, phone: v })} placeholder="050-0000000" type="tel" />
       </Field>
       <Field label="אימייל">
-        <Input value={data.email || ''} onChange={(v) => setData({ ...data, email: v })} placeholder="your@email.com" type="email" />
+        <TextInput value={data.email || ''} onChange={(v) => setData({ ...data, email: v })} placeholder="your@email.com" type="email" />
       </Field>
       <NavButtons onNext={onNext} onBack={onBack} nextDisabled={!valid} />
     </StepCard>
   );
 }
 
-// ── Screen 1.3: Project type, location, size ──
+// ── 1.3 ──────────────────────────────────────────────────────────────────────
 export function Screen1_3({ data, setData, onNext, onBack, direction }) {
   const valid = data.projectType && data.location?.trim() && data.size?.trim();
   return (
     <StepCard direction={direction}>
-      <h2 className="text-xl font-bold text-[#101218] mb-1">פרטי הפרויקט</h2>
-      <p className="text-sm text-gray-500 mb-6">קצת על הפרויקט שלכם</p>
+      <StepHeading title="פרטי הפרויקט" />
       <Field label="סוג פרויקט">
         <ChipSelect
           options={PROJECT_TYPES}
@@ -84,23 +108,22 @@ export function Screen1_3({ data, setData, onNext, onBack, direction }) {
         />
       </Field>
       <Field label="מיקום הפרויקט">
-        <Input value={data.location || ''} onChange={(v) => setData({ ...data, location: v })} placeholder="עיר / אזור" />
+        <TextInput value={data.location || ''} onChange={(v) => setData({ ...data, location: v })} placeholder="עיר / אזור" />
       </Field>
-      <Field label='גודל הפרויקט במ"ר'>
-        <Input value={data.size || ''} onChange={(v) => setData({ ...data, size: v })} placeholder='למשל: 500 מ"ר' />
+      <Field label='גודל במ"ר'>
+        <TextInput value={data.size || ''} onChange={(v) => setData({ ...data, size: v })} placeholder='למשל: 500' />
       </Field>
       <NavButtons onNext={onNext} onBack={onBack} nextDisabled={!valid} />
     </StepCard>
   );
 }
 
-// ── Screen 1.4: Project stage ──
+// ── 1.4 ──────────────────────────────────────────────────────────────────────
 export function Screen1_4({ data, setData, onNext, onBack, direction }) {
   const valid = !!data.projectStage;
   return (
     <StepCard direction={direction}>
-      <h2 className="text-xl font-bold text-[#101218] mb-1">שלב הפרויקט</h2>
-      <p className="text-sm text-gray-500 mb-2">באיזה שלב נמצא הפרויקט כיום?</p>
+      <StepHeading title="שלב הפרויקט" sub="באיזה שלב נמצא הפרויקט כיום?" />
       <ChipSelect
         options={PROJECT_STAGES}
         value={data.projectStage || null}
@@ -111,9 +134,7 @@ export function Screen1_4({ data, setData, onNext, onBack, direction }) {
   );
 }
 
-// ── Screen 1.5: Service selection ──
-import { SERVICES } from '../data/flowConfig';
-
+// ── 1.5 ──────────────────────────────────────────────────────────────────────
 export function Screen1_5({ data, setData, onNext, onBack, direction }) {
   const selected = data.selectedServices || [];
   const valid = selected.length > 0;
@@ -127,9 +148,8 @@ export function Screen1_5({ data, setData, onNext, onBack, direction }) {
 
   return (
     <StepCard direction={direction}>
-      <h2 className="text-xl font-bold text-[#101218] mb-1">בחירת שירותים</h2>
-      <p className="text-sm text-gray-500 mb-6">אילו שירותים תרצו לכלול בהצעה? (ניתן לבחור מספר)</p>
-      <div className="flex flex-col gap-3">
+      <StepHeading title="בחירת שירותים" sub="ניתן לבחור מספר שירותים" />
+      <div className="flex flex-col gap-2.5">
         {SERVICES.map((svc) => {
           const isSel = selected.includes(svc.id);
           return (
@@ -139,17 +159,26 @@ export function Screen1_5({ data, setData, onNext, onBack, direction }) {
               onClick={() => toggle(svc.id)}
               className={`service-card ${isSel ? 'selected' : ''}`}
             >
-              <span className="text-2xl">{svc.icon}</span>
-              <div className="flex-1 text-right">
-                <p className="font-semibold text-sm text-[#101218]">{svc.label}</p>
-              </div>
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${isSel ? 'bg-[#4175fc] border-[#4175fc]' : 'border-gray-300'}`}>
+              <span className="text-xl shrink-0">{svc.icon}</span>
+              <span
+                className="flex-1 text-right text-sm font-semibold"
+                style={{ color: '#101218' }}
+              >
+                {svc.label}
+              </span>
+              <span
+                className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all"
+                style={{
+                  backgroundColor: isSel ? '#4175fc' : 'transparent',
+                  borderColor: isSel ? '#4175fc' : '#d1d5db',
+                }}
+              >
                 {isSel && (
                   <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
                     <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 )}
-              </div>
+              </span>
             </button>
           );
         })}

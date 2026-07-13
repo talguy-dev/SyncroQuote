@@ -4,10 +4,12 @@ import NavButtons from '../components/NavButtons';
 export default function Step3_Closing({ data, setData, onNext, onBack, direction }) {
   return (
     <StepCard direction={direction}>
-      <h2 className="text-xl font-bold text-[#101218] mb-1">שאלות סגירה</h2>
-      <p className="text-sm text-gray-500 mb-6">הערות נוספות שתרצו לשתף איתנו</p>
+      <div className="mb-5">
+        <h2 className="text-lg font-bold" style={{ color: '#101218' }}>שאלות סגירה</h2>
+        <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>הערות נוספות לצוות Syncro</p>
+      </div>
 
-      <label className="block text-sm font-semibold text-gray-700 mb-2">
+      <label className="block text-xs font-semibold mb-1.5" style={{ color: '#6b7280' }}>
         הערות / מידע נוסף
       </label>
       <textarea
@@ -15,14 +17,19 @@ export default function Step3_Closing({ data, setData, onNext, onBack, direction
         value={data.closingRemarks || ''}
         onChange={(e) => setData({ ...data, closingRemarks: e.target.value })}
         placeholder="כל מידע נוסף שיעזור לנו להכין את ההצעה המדויקת ביותר עבורכם..."
-        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 text-sm outline-none focus:border-[#4175fc] transition-colors resize-none"
+        className="w-full rounded-xl text-sm outline-none resize-none"
+        style={{
+          padding: '13px 14px',
+          border: '2px solid #e2e5ed',
+          backgroundColor: '#fafbff',
+          fontSize: '16px',
+          lineHeight: '1.5',
+        }}
+        onFocus={(e) => { e.target.style.borderColor = '#4175fc'; }}
+        onBlur={(e)  => { e.target.style.borderColor = '#e2e5ed'; }}
       />
 
-      <NavButtons
-        onNext={onNext}
-        onBack={onBack}
-        nextLabel="לסיכום ואישור"
-      />
+      <NavButtons onNext={onNext} onBack={onBack} nextLabel="לסיכום ואישור" />
     </StepCard>
   );
 }

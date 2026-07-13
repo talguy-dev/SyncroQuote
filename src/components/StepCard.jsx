@@ -14,7 +14,13 @@ export default function StepCard({ children, direction = 'forward' }) {
   return (
     <div
       ref={ref}
-      className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 w-full max-w-xl mx-auto"
+      className="rounded-2xl w-full"
+      style={{
+        backgroundColor: '#ffffff',
+        boxShadow: '0 1px 8px rgba(0,0,0,0.07)',
+        border: '1px solid #eaecf2',
+        padding: '22px 18px',
+      }}
     >
       {children}
     </div>

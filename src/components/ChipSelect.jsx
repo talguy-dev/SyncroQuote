@@ -13,7 +13,7 @@ export default function ChipSelect({ options, value, onChange, multi = false }) 
   };
 
   return (
-    <div className="flex flex-wrap gap-3 mt-4">
+    <div className="flex flex-wrap gap-2 mt-3">
       {options.map((opt) => {
         const isSelected = multi ? selected.includes(opt) : selected === opt;
         return (

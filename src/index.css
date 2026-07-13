@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@layer base {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    direction: rtl;
+    font-family: 'Assistant', 'Lato', system-ui, sans-serif;
+    background: linear-gradient(135deg, #f0f4ff 0%, #f8f9fc 100%);
+    color: #101218;
+    min-height: 100vh;
+  }
+  #root { min-height: 100vh; }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(-32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes pulseDot {
+  0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.anim-forward  { animation: slideInRight 0.38s cubic-bezier(.22,1,.36,1) both; }
+.anim-backward { animation: slideInLeft  0.38s cubic-bezier(.22,1,.36,1) both; }
+.anim-fade     { animation: fadeIn 0.4s ease both; }
+
+.spinner {
+  width: 48px; height: 48px;
+  border: 4px solid #e5e7ef;
+  border-top-color: #4175fc;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+.dot-pulse span {
+  display: inline-block;
+  width: 8px; height: 8px;
+  background: #4175fc;
+  border-radius: 50%;
+  margin: 0 3px;
+}
+.dot-pulse span:nth-child(1) { animation: pulseDot 1.2s ease-in-out 0s infinite; }
+.dot-pulse span:nth-child(2) { animation: pulseDot 1.2s ease-in-out 0.2s infinite; }
+.dot-pulse span:nth-child(3) { animation: pulseDot 1.2s ease-in-out 0.4s infinite; }
+
+/* Chip / selectable card */
+.chip {
+  cursor: pointer;
+  border: 2px solid #e2e5ed;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #101218;
+  background: #fff;
+  transition: border-color 0.18s, background 0.18s, color 0.18s, box-shadow 0.18s;
+  user-select: none;
+}
+.chip:hover { border-color: #4175fc; box-shadow: 0 0 0 3px rgba(65,117,252,0.12); }
+.chip.selected {
+  border-color: #4175fc;
+  background: #4175fc;
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(65,117,252,0.3);
+}
+
+.service-card {
+  cursor: pointer;
+  border: 2px solid #e2e5ed;
+  border-radius: 16px;
+  padding: 18px 22px;
+  background: #fff;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.service-card:hover { border-color: #4175fc; box-shadow: 0 0 0 3px rgba(65,117,252,0.1); }
+.service-card.selected { border-color: #4175fc; background: #f0f4ff; }

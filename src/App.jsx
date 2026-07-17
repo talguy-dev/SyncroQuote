@@ -10,39 +10,56 @@ import Step4_Review from './steps/Step4_Review';
 import Step5_Success from './steps/Step5_Success';
 import { SERVICE_QUESTIONS } from './data/flowConfig';
 
+const PHASE_META = {
+  contact:     { label: 'פרטים',  color: '#6b7280' },
+  consulting:  { label: 'ייעוץ',  color: '#4175fc' },
+  supervision: { label: 'פיקוח', color: '#f97316' },
+  management:  { label: 'ניהול',  color: '#16a34a' },
+  bim:         { label: 'BIM',    color: '#9333ea' },
+  closing:     { label: 'סיכום', color: '#6b7280' },
+};
+
 function buildScreenList(selectedServices) {
   const screens = [
-    { type: 'step1_1' },
-    { type: 'step1_2' },
-    { type: 'step1_3' },
-    { type: 'step1_4' },
-    { type: 'step1_5' },
+    { type: 'step1_1', phaseId: 'contact' },
+    { type: 'step1_2', phaseId: 'contact' },
+    { type: 'step1_3', phaseId: 'contact' },
+    { type: 'step1_4', phaseId: 'contact' },
+    { type: 'step1_5', phaseId: 'contact' },
   ];
   if (selectedServices?.length) {
     for (const svc of selectedServices) {
       const qs = SERVICE_QUESTIONS[svc] || [];
       qs.forEach((_, qi) => {
-        screens.push({ type: 'step2', serviceId: svc, questionIndex: qi });
+        screens.push({ type: 'step2', serviceId: svc, questionIndex: qi, phaseId: svc });
       });
     }
   }
-  screens.push({ type: 'step3' });
-  screens.push({ type: 'step4' });
+  screens.push({ type: 'step3', phaseId: 'closing' });
+  screens.push({ type: 'step4', phaseId: 'closing' });
   return screens;
 }
 
-function getScreenLabel(screen) {
-  const labels = {
-    step1_1: 'פרטים אישיים',
-    step1_2: 'פרטי התקשרות',
-    step1_3: 'פרטי פרויקט',
-    step1_4: 'שלב הפרויקט',
-    step1_5: 'בחירת שירותים',
-    step2: 'שאלות שירות',
-    step3: 'שאלות סגירה',
-    step4: 'סיכום ואישור',
-  };
-  return labels[screen?.type] || '';
+function getPhaseList(screens) {
+  const seen = new Set();
+  const phases = [];
+  for (const s of screens) {
+    if (!seen.has(s.phaseId)) {
+      seen.add(s.phaseId);
+      phases.push(s.phaseId);
+    }
+  }
+  return phases;
+}
+
+function getPhaseProgress(screens, screenIndex) {
+  const currentPhaseId = screens[screenIndex]?.phaseId;
+  if (!currentPhaseId) return { current: 1, total: 1 };
+  const phaseIndices = screens
+    .map((s, i) => (s.phaseId === currentPhaseId ? i : -1))
+    .filter(i => i >= 0);
+  const pos = phaseIndices.indexOf(screenIndex);
+  return { current: pos + 1, total: phaseIndices.length };
 }
 
 export default function App() {
@@ -119,9 +136,10 @@ export default function App() {
     <div className="flex flex-col flex-1">
       <Header />
       <ProgressBar
-        current={screenIndex + 1}
-        total={total}
-        label={getScreenLabel(current)}
+        phases={getPhaseList(screens)}
+        currentPhaseId={current?.phaseId}
+        phaseProgress={getPhaseProgress(screens, screenIndex)}
+        phaseMeta={PHASE_META}
       />
       <main className="flex-1 px-4 py-5 overflow-y-auto">
         {renderScreen()}

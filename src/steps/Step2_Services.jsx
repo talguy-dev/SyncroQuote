@@ -45,16 +45,22 @@ export default function Step2_Services({ data, setData, onNext, onBack, directio
 
   return (
     <StepCard direction={direction}>
-      {/* Service badge */}
-      <div className="flex items-center justify-between mb-4">
+      {/* Section header */}
+      <div
+        className="rounded-xl mb-4 px-4 py-3 flex items-center justify-between"
+        style={{ backgroundColor: meta.color }}
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{meta.icon}</span>
+          <span className="text-sm font-bold" style={{ color: meta.badge }}>
+            {meta.label}
+          </span>
+        </div>
         <span
-          className="text-xs font-bold px-3 py-1 rounded-full"
-          style={{ backgroundColor: meta.color, color: meta.badge }}
+          className="text-xs font-semibold px-2 py-0.5 rounded-full"
+          style={{ backgroundColor: meta.badge, color: 'white' }}
         >
-          {meta.icon} {meta.label}
-        </span>
-        <span className="text-xs" style={{ color: '#9ca3af' }}>
-          {questionIndex + 1} / {questions.length}
+          {questionIndex + 1}/{questions.length}
         </span>
       </div>
 

@@ -1,29 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { generateQuoteDocx } from '../utils/generateDocx';
 import { generateQuotePdf }  from '../utils/generatePdf';
 import QuotePDFTemplate      from '../components/QuotePDFTemplate';
 
-function buildMeta() {
-  const now      = new Date();
-  const valid    = new Date(now);
-  valid.setDate(valid.getDate() + 30);
-  const fmt = (d) => d.toLocaleDateString('he-IL');
-  const year     = now.getFullYear();
-  return {
-    dateStr:      fmt(now),
-    validUntilStr: fmt(valid),
-    quoteId:      `HZ-${year}-001`,
-  };
+function buildQuoteId() {
+  return `HZ-${new Date().getFullYear()}-001`;
 }
 
 export default function Step5_Success({ data, onReset }) {
   const pdfRef = useRef(null);
-  const [phase,     setPhase]     = useState('generating');
-  const [loading,   setLoading]   = useState(null);   // 'pdf' | 'docx' | null
-  const [error,     setError]     = useState(null);
+  const [phase,   setPhase]   = useState('generating');
+  const [loading, setLoading] = useState(false);
+  const [error,   setError]   = useState(null);
 
-  const { dateStr, validUntilStr, quoteId } = buildMeta();
+  const quoteId = buildQuoteId();
 
   useEffect(() => {
     const t = setTimeout(() => setPhase('ready'), 2200);
@@ -31,28 +21,15 @@ export default function Step5_Success({ data, onReset }) {
   }, []);
 
   const handlePdf = async () => {
-    setLoading('pdf');
+    setLoading(true);
     setError(null);
     try {
-      await generateQuotePdf(pdfRef.current, `הצעת_מחיר_${quoteId}.pdf`);
+      await generateQuotePdf(pdfRef.current, `סיכום_שאלון_${quoteId}.pdf`);
     } catch (e) {
       console.error(e);
       setError('שגיאה בהפקת PDF. נסו שוב.');
     } finally {
-      setLoading(null);
-    }
-  };
-
-  const handleDocx = async () => {
-    setLoading('docx');
-    setError(null);
-    try {
-      await generateQuoteDocx(data);
-    } catch (e) {
-      console.error(e);
-      setError('שגיאה בהפקת Word. נסו שוב.');
-    } finally {
-      setLoading(null);
+      setLoading(false);
     }
   };
 
@@ -70,13 +47,7 @@ export default function Step5_Success({ data, onReset }) {
             pointerEvents: 'none',
           }}
         >
-          <QuotePDFTemplate
-            ref={pdfRef}
-            data={data}
-            quoteId={quoteId}
-            dateStr={dateStr}
-            validUntilStr={validUntilStr}
-          />
+          <QuotePDFTemplate ref={pdfRef} data={data} />
         </div>,
         document.body,
       )}
@@ -95,7 +66,7 @@ export default function Step5_Success({ data, onReset }) {
             </div>
             <div>
               <h2 className="text-xl font-bold mb-1" style={{ color: '#101218' }}>
-                מכין הצעת מחיר...
+                מכין סיכום שאלון...
               </h2>
               <p className="text-sm" style={{ color: '#9ca3af' }}>מעבד את הנתונים</p>
             </div>
@@ -126,10 +97,10 @@ export default function Step5_Success({ data, onReset }) {
             {/* Title */}
             <div>
               <h2 className="text-lg font-bold mb-0.5" style={{ color: '#101218' }}>
-                ההצעה מוכנה!
+                הסיכום מוכן!
               </h2>
               <p className="text-xs" style={{ color: '#9ca3af' }}>
-                בחרו את הפורמט להורדה
+                לחצו להורדת סיכום השאלון כ-PDF
               </p>
             </div>
 
@@ -143,10 +114,10 @@ export default function Step5_Success({ data, onReset }) {
               </p>
             )}
 
-            {/* ── PDF button (Primary) ── */}
+            {/* ── PDF button ── */}
             <button
               onClick={handlePdf}
-              disabled={!!loading}
+              disabled={loading}
               className="w-full py-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2"
               style={{
                 backgroundColor: loading ? '#e5e7eb' : '#4175fc',
@@ -156,7 +127,7 @@ export default function Step5_Success({ data, onReset }) {
                 cursor: loading ? 'not-allowed' : 'pointer',
               }}
             >
-              {loading === 'pdf' ? (
+              {loading ? (
                 <>
                   <span
                     style={{
@@ -176,54 +147,10 @@ export default function Step5_Success({ data, onReset }) {
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M3 13h10M8 3v7M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  הורד כקובץ PDF
+                  הורד סיכום שאלון PDF
                 </>
               )}
             </button>
-
-            {/* ── Word button (Secondary) ── */}
-            <button
-              onClick={handleDocx}
-              disabled={!!loading}
-              className="w-full py-3.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2"
-              style={{
-                border:          '2px solid #4175fc',
-                color:           loading ? '#9ca3af' : '#4175fc',
-                backgroundColor: loading ? '#f3f4f6' : '#f0f4ff',
-                minHeight: '48px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-              }}
-            >
-              {loading === 'docx' ? (
-                <>
-                  <span
-                    style={{
-                      width: '14px', height: '14px',
-                      border: '2px solid #bfcfff',
-                      borderTopColor: '#4175fc',
-                      borderRadius: '50%',
-                      animation: 'spin 0.8s linear infinite',
-                      display: 'inline-block',
-                      flexShrink: 0,
-                    }}
-                  />
-                  מייצר Word...
-                </>
-              ) : (
-                <>
-                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                    <rect x="2" y="1" width="9" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.6"/>
-                    <path d="M11 1l3 3v11H5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-                    <path d="M5 7h5M5 10h3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
-                  </svg>
-                  הורד כקובץ Word
-                </>
-              )}
-            </button>
-
-            <p className="text-xs" style={{ color: '#9ca3af' }}>
-              שני הפורמטים כוללים הצעת מחיר + תנאי שירות
-            </p>
 
             {/* Reset */}
             <button

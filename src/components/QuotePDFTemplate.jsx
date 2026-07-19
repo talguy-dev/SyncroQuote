@@ -1,4 +1,5 @@
 import { forwardRef } from 'react';
+import { SERVICES, SERVICE_QUESTIONS } from '../data/flowConfig';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const C = {
@@ -42,8 +43,8 @@ const BlueLine = () => (
 const ThinLine = () => (
   <div style={{ height: '1px', backgroundColor: C.border, margin: '6px 0' }} />
 );
-const SectionLabel = ({ children }) => (
-  <div style={{ fontWeight: '700', color: C.blue, fontSize: '11.5px', marginBottom: '6px' }}>
+const SectionLabel = ({ children, color }) => (
+  <div style={{ fontWeight: '700', color: color || C.blue, fontSize: '11.5px', marginBottom: '6px' }}>
     {children}
   </div>
 );
@@ -223,6 +224,142 @@ const TERMS_DATA = {
     ],
   },
 };
+
+// ─── Summary page helpers ─────────────────────────────────────────────────────
+const SUMMARY_SERVICE_COLORS = {
+  consulting:  { text: '#4175fc', bg: '#f0f4ff' },
+  supervision: { text: '#f97316', bg: '#fff7ed' },
+  management:  { text: '#16a34a', bg: '#f0fdf4' },
+  bim:         { text: '#9333ea', bg: '#faf5ff' },
+};
+const SUMMARY_SERVICE_ICONS = {
+  consulting: '🏗️', supervision: '🔍', management: '📋', bim: '🧊',
+};
+
+function resolveAnswer(answer, otherText) {
+  if (!answer && answer !== 0) return '—';
+  if (typeof answer === 'object' && answer.option) {
+    return answer.text ? `${answer.option}: ${answer.text}` : answer.option;
+  }
+  if (answer === 'אחר' && otherText) return `אחר: ${otherText}`;
+  return String(answer);
+}
+
+function SummaryTable({ rows, headerBg, headerText }) {
+  return (
+    <table
+      style={{
+        width: '100%',
+        borderCollapse: 'collapse',
+        fontSize: '10px',
+        marginBottom: '14px',
+        border: `1px solid ${C.border}`,
+        borderRadius: '6px',
+        overflow: 'hidden',
+      }}
+    >
+      <tbody>
+        {rows.map((row, i) => (
+          <tr
+            key={i}
+            style={{ backgroundColor: i % 2 === 0 ? C.white : C.lightGray }}
+          >
+            <td
+              style={{
+                padding: '7px 11px',
+                fontWeight: '700',
+                color: headerText || C.blue,
+                width: '42%',
+                textAlign: 'right',
+                borderBottom: `1px solid ${C.border}`,
+                borderLeft: `1px solid ${C.border}`,
+                backgroundColor: i % 2 === 0 ? (headerBg || C.blueBg) : undefined,
+              }}
+            >
+              {row.label}
+            </td>
+            <td
+              style={{
+                padding: '7px 11px',
+                color: C.charcoal,
+                borderBottom: `1px solid ${C.border}`,
+                textAlign: 'right',
+              }}
+            >
+              {row.value || '—'}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function SummaryPage({ data }) {
+  const answers       = data.serviceAnswers  || {};
+  const selectedSvcs  = data.selectedServices || [];
+
+  const projectTypeDisplay =
+    data.projectType === 'אחר' && data.projectTypeOther
+      ? `אחר: ${data.projectTypeOther}`
+      : data.projectType;
+
+  const serviceLabels = selectedSvcs
+    .map((id) => SERVICES.find((s) => s.id === id)?.label || id)
+    .join(' · ');
+
+  const generalRows = [
+    { label: 'שם',           value: data.fullName },
+    { label: 'חברה',         value: data.company },
+    { label: 'טלפון',        value: data.phone },
+    { label: 'אימייל',       value: data.email },
+    { label: 'סוג פרויקט',  value: projectTypeDisplay },
+    { label: 'מיקום',        value: data.location },
+    { label: 'גודל (מ"ר)',  value: data.size },
+    { label: 'שלב פרויקט',  value: data.projectStage },
+    { label: 'שירותים',      value: serviceLabels },
+  ];
+
+  return (
+    <div style={{ pageBreakBefore: 'always', ...PAGE, minHeight: '1123px' }}>
+      <PageHeader title="סיכום שאלון" subtitle="פרטי הפרויקט שנאספו" />
+      <BlueLine />
+
+      {/* פרטים כלליים */}
+      <SectionLabel>פרטים כלליים</SectionLabel>
+      <SummaryTable rows={generalRows} />
+
+      {/* שאלות לפי שירות */}
+      {selectedSvcs
+        .filter((id) => (SERVICE_QUESTIONS[id] || []).length > 0)
+        .map((svcId) => {
+          const svc     = SERVICES.find((s) => s.id === svcId);
+          const qs      = SERVICE_QUESTIONS[svcId] || [];
+          const colors  = SUMMARY_SERVICE_COLORS[svcId] || {};
+          const icon    = SUMMARY_SERVICE_ICONS[svcId]   || '';
+
+          const rows = qs.map((q) => ({
+            label: q.question,
+            value: resolveAnswer(answers[q.id], answers[`${q.id}_other`] || ''),
+          }));
+
+          return (
+            <div key={svcId} style={{ marginBottom: '6px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px' }}>
+                <span style={{ fontSize: '13px' }}>{icon}</span>
+                <SectionLabel color={colors.text}>{svc?.label || svcId}</SectionLabel>
+              </div>
+              <SummaryTable
+                rows={rows}
+                headerBg={colors.bg}
+                headerText={colors.text}
+              />
+            </div>
+          );
+        })}
+    </div>
+  );
+}
 
 // ─── Terms section block (break-inside: avoid) ────────────────────────────────
 function TermsSection({ section }) {
@@ -564,6 +701,9 @@ const QuotePDFTemplate = forwardRef(function QuotePDFTemplate(
           </div>
         </div>
       </div>
+
+      {/* ══════════════════════════════════ SUMMARY PAGE — collected form data ══════════════════════════════════ */}
+      <SummaryPage data={data} />
 
       {/* ══════════════════════════════════ TERMS PAGES — one per service ══════════════════════════════════ */}
       {termsServices.map((id) => (

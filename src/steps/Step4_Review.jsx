@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { SERVICES, SERVICE_QUESTIONS } from '../data/flowConfig';
 
 function validateData(data) {
@@ -53,8 +54,116 @@ const SERVICE_ICONS = {
   consulting: '🏗️', supervision: '🔍', management: '📋', bim: '🧊',
 };
 
-export default function Step4_Review({ data, onBack, onGenerate, direction }) {
+function EditSectionModal({ data, onClose, onNavigateTo }) {
+  const selectedServices = data.selectedServices || [];
+
+  const handleSelect = (type, serviceId) => {
+    onNavigateTo({ type, serviceId });
+    onClose();
+  };
+
+  return createPortal(
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
+        {/* drag handle */}
+        <div style={{ width: '40px', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px', margin: '0 auto 18px' }} />
+
+        <p style={{ fontWeight: '700', fontSize: '15px', color: '#101218', marginBottom: '14px', textAlign: 'right' }}>
+          באיזה חלק תרצו לערוך?
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {/* פרטים כלליים */}
+          <button
+            onClick={() => handleSelect('general')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '13px 14px', borderRadius: '12px',
+              border: '1.5px solid #e2e5ed', backgroundColor: '#fafbff',
+              cursor: 'pointer', width: '100%', textAlign: 'right',
+            }}
+          >
+            <span style={{ fontSize: '18px' }}>👤</span>
+            <span style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: '#6b7280', textAlign: 'right' }}>
+              פרטים כלליים
+            </span>
+          </button>
+
+          {/* בחירת שירותים */}
+          <button
+            onClick={() => handleSelect('services')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '13px 14px', borderRadius: '12px',
+              border: '1.5px solid #e2e5ed', backgroundColor: '#fafbff',
+              cursor: 'pointer', width: '100%', textAlign: 'right',
+            }}
+          >
+            <span style={{ fontSize: '18px' }}>📌</span>
+            <span style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: '#4175fc', textAlign: 'right' }}>
+              בחירת שירותים אחרים
+            </span>
+          </button>
+
+          {/* שירות ספציפי */}
+          {selectedServices.filter((id) => (SERVICE_QUESTIONS[id] || []).length > 0).length > 0 && (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '4px 0 2px' }}>
+                <div style={{ flex: 1, height: '1px', backgroundColor: '#e5e7eb' }} />
+                <span style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                  תיקון בתוך שירות נבחר
+                </span>
+                <div style={{ flex: 1, height: '1px', backgroundColor: '#e5e7eb' }} />
+              </div>
+
+              {selectedServices
+                .filter((id) => (SERVICE_QUESTIONS[id] || []).length > 0)
+                .map((id) => {
+                  const svc = SERVICES.find((s) => s.id === id);
+                  const colors = SERVICE_COLORS[id] || {};
+                  return (
+                    <button
+                      key={id}
+                      onClick={() => handleSelect('service', id)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '10px',
+                        padding: '13px 14px', borderRadius: '12px',
+                        border: `1.5px solid ${colors.bg || '#e2e5ed'}`,
+                        backgroundColor: colors.bg || '#fafbff',
+                        cursor: 'pointer', width: '100%', textAlign: 'right',
+                      }}
+                    >
+                      <span style={{ fontSize: '18px' }}>{SERVICE_ICONS[id]}</span>
+                      <span style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: colors.text || '#101218', textAlign: 'right' }}>
+                        {svc?.label || id}
+                      </span>
+                    </button>
+                  );
+                })}
+            </>
+          )}
+        </div>
+
+        <button
+          onClick={onClose}
+          style={{
+            width: '100%', marginTop: '14px', padding: '13px',
+            borderRadius: '12px', border: '1.5px solid #e2e5ed',
+            backgroundColor: '#fff', color: '#9ca3af',
+            fontSize: '14px', fontWeight: '500', cursor: 'pointer',
+          }}
+        >
+          ביטול
+        </button>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+export default function Step4_Review({ data, onBack, onGenerate, onNavigateTo, direction }) {
   const [confirmed, setConfirmed] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
   const missing = validateData(data);
   const hasMissing = missing.length > 0;
   const answers = data.serviceAnswers || {};
@@ -170,7 +279,7 @@ export default function Step4_Review({ data, onBack, onGenerate, direction }) {
               כן, הכל תקין ✓
             </button>
             <button
-              onClick={() => setConfirmed(false)}
+              onClick={() => setShowEditModal(true)}
               className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all"
               style={{
                 border: `2px solid ${confirmed === false ? '#ef4444' : '#e2e5ed'}`,
@@ -189,7 +298,7 @@ export default function Step4_Review({ data, onBack, onGenerate, direction }) {
       <div className="flex flex-col gap-2">
         {(hasMissing || confirmed === false) && (
           <button
-            onClick={onBack}
+            onClick={() => setShowEditModal(true)}
             className="w-full py-3.5 rounded-xl text-sm font-bold"
             style={{ border: '2px solid #4175fc', color: '#4175fc', backgroundColor: '#f0f4ff', minHeight: '50px' }}
           >
@@ -221,6 +330,14 @@ export default function Step4_Review({ data, onBack, onGenerate, direction }) {
           חזרה
         </button>
       </div>
+
+      {showEditModal && (
+        <EditSectionModal
+          data={data}
+          onClose={() => setShowEditModal(false)}
+          onNavigateTo={onNavigateTo}
+        />
+      )}
     </div>
   );
 }

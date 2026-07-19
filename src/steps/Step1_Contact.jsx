@@ -21,13 +21,15 @@ function Label({ children }) {
   );
 }
 
-function TextInput({ value, onChange, placeholder, type = 'text' }) {
+function TextInput({ value, onChange, placeholder, type = 'text', maxLength, inputMode }) {
   return (
     <input
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
+      maxLength={maxLength}
+      inputMode={inputMode}
       className="w-full rounded-xl text-sm outline-none transition-all"
       style={{
         padding: '13px 14px',
@@ -84,7 +86,17 @@ export function Screen1_2({ data, setData, onNext, onBack, direction }) {
     <StepCard direction={direction}>
       <StepHeading title="פרטי התקשרות" sub="כך נוכל ליצור איתכם קשר" />
       <Field label="טלפון">
-        <TextInput value={data.phone || ''} onChange={(v) => setData({ ...data, phone: v })} placeholder="050-0000000" type="tel" />
+        <TextInput
+          value={data.phone || ''}
+          onChange={(v) => {
+            const digits = v.replace(/\D/g, '').slice(0, 10);
+            setData({ ...data, phone: digits });
+          }}
+          placeholder="0500000000"
+          type="text"
+          inputMode="numeric"
+          maxLength={10}
+        />
       </Field>
       <Field label="אימייל">
         <TextInput value={data.email || ''} onChange={(v) => setData({ ...data, email: v })} placeholder="your@email.com" type="email" />

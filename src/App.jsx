@@ -8,6 +8,7 @@ import Step2_Services from './steps/Step2_Services';
 import Step3_Closing from './steps/Step3_Closing';
 import Step4_Review from './steps/Step4_Review';
 import Step5_Success from './steps/Step5_Success';
+import IntroScreen from './steps/IntroScreen';
 import { SERVICE_QUESTIONS } from './data/flowConfig';
 
 const PHASE_META = {
@@ -63,6 +64,7 @@ function getPhaseProgress(screens, screenIndex) {
 }
 
 export default function App() {
+  const [showIntro, setShowIntro] = useState(true);
   const [formData, setFormData] = useState({});
   const [screenIndex, setScreenIndex] = useState(0);
   const [direction, setDirection] = useState('forward');
@@ -82,6 +84,18 @@ export default function App() {
     setScreenIndex((i) => Math.max(i - 1, 0));
   }, []);
 
+  const goToSection = useCallback((target) => {
+    setDirection('backward');
+    if (target.type === 'general') {
+      setScreenIndex(0);
+    } else if (target.type === 'services') {
+      setScreenIndex(4);
+    } else if (target.type === 'service') {
+      const idx = screens.findIndex((s) => s.type === 'step2' && s.serviceId === target.serviceId);
+      if (idx >= 0) setScreenIndex(idx);
+    }
+  }, [screens]);
+
   const handleGenerate = () => setShowSuccess(true);
 
   const handleReset = () => {
@@ -89,7 +103,12 @@ export default function App() {
     setScreenIndex(0);
     setDirection('forward');
     setShowSuccess(false);
+    setShowIntro(true);
   };
+
+  if (showIntro) {
+    return <IntroScreen onStart={() => setShowIntro(false)} />;
+  }
 
   if (showSuccess) {
     return (
@@ -126,7 +145,7 @@ export default function App() {
       );
       case 'step3': return <Step3_Closing {...props} />;
       case 'step4': return (
-        <Step4_Review {...props} onBack={goBack} onGenerate={handleGenerate} />
+        <Step4_Review {...props} onBack={goBack} onGenerate={handleGenerate} onNavigateTo={goToSection} />
       );
       default: return null;
     }

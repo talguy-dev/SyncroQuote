@@ -1,6 +1,47 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 const VIDEO_SRC = '/סרטון תדמית רקע.mp4';
 
 export default function IntroScreen({ onStart }) {
+  const videoRef   = useRef(null);
+  const [zoomScale, setZoomScale] = useState(1);   // cover-equivalent scale
+  const [zoomedOut, setZoomedOut] = useState(false);
+
+  // Once video metadata is known, calculate the scale that makes objectFit:contain look like objectFit:cover
+  const handleLoadedMetadata = useCallback(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const cw = v.parentElement?.clientWidth  || window.innerWidth;
+    const ch = v.parentElement?.clientHeight || window.innerHeight;
+    const coverScale   = Math.max(cw / v.videoWidth, ch / v.videoHeight);
+    const containScale = Math.min(cw / v.videoWidth, ch / v.videoHeight);
+    setZoomScale(coverScale / containScale);
+  }, []);
+
+  // Zoom out in the last 2 s; snap back instantly when the video loops
+  const handleTimeUpdate = useCallback(() => {
+    const v = videoRef.current;
+    if (!v || !v.duration) return;
+    const nearEnd = v.currentTime >= v.duration - 2;
+    setZoomedOut((prev) => {
+      if (prev === nearEnd) return prev;
+      return nearEnd;
+    });
+  }, []);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.addEventListener('loadedmetadata', handleLoadedMetadata);
+    v.addEventListener('timeupdate',     handleTimeUpdate);
+    return () => {
+      v.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      v.removeEventListener('timeupdate',     handleTimeUpdate);
+    };
+  }, [handleLoadedMetadata, handleTimeUpdate]);
+
+  const scale = zoomedOut ? 1 : zoomScale;
+
   return (
     <div
       style={{
@@ -13,16 +54,24 @@ export default function IntroScreen({ onStart }) {
     >
       {/* ── Background video ── */}
       <video
+        ref={videoRef}
         autoPlay
         muted
         loop
         playsInline
+        onLoadedMetadata={handleLoadedMetadata}
+        onTimeUpdate={handleTimeUpdate}
         style={{
           position: 'absolute',
-          inset: 0,
+          top: '50%',
+          left: '50%',
           width: '100%',
           height: '100%',
-          objectFit: 'cover',
+          objectFit: 'contain',
+          transform: `translate(-50%, -50%) scale(${scale})`,
+          transformOrigin: 'center center',
+          // Animate the zoom-out; snap back instantly on loop
+          transition: zoomedOut ? 'transform 1.5s ease-in-out' : 'none',
         }}
       >
         <source src={VIDEO_SRC} type="video/mp4" />

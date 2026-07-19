@@ -3,8 +3,10 @@ import { createPortal } from 'react-dom';
 import { generateQuotePdf }  from '../utils/generatePdf';
 import QuotePDFTemplate      from '../components/QuotePDFTemplate';
 
-function buildQuoteId() {
-  return `HZ-${new Date().getFullYear()}-001`;
+function buildFilename(company) {
+  const date    = new Date().toLocaleDateString('he-IL').replace(/\//g, '-');
+  const co      = company?.trim() ? `_${company.trim()}` : '';
+  return `הצעת מחיר${co}_${date}.pdf`;
 }
 
 export default function Step5_Success({ data, onReset }) {
@@ -12,8 +14,6 @@ export default function Step5_Success({ data, onReset }) {
   const [phase,   setPhase]   = useState('generating');
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState(null);
-
-  const quoteId = buildQuoteId();
 
   useEffect(() => {
     const t = setTimeout(() => setPhase('ready'), 2200);
@@ -24,7 +24,7 @@ export default function Step5_Success({ data, onReset }) {
     setLoading(true);
     setError(null);
     try {
-      await generateQuotePdf(pdfRef.current, `סיכום_שאלון_${quoteId}.pdf`);
+      await generateQuotePdf(pdfRef.current, buildFilename(data.company));
     } catch (e) {
       console.error(e);
       setError('שגיאה בהפקת PDF. נסו שוב.');

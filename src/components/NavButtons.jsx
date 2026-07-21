@@ -29,11 +29,11 @@ export default function NavButtons({
         disabled={nextDisabled}
         className="flex-1 py-3 rounded-xl text-sm font-bold transition-all"
         style={{
-          backgroundColor: nextDisabled ? '#e5e7eb' : '#4175fc',
+          backgroundColor: nextDisabled ? '#e5e7eb' : '#E8931A',
           color: nextDisabled ? '#9ca3af' : '#ffffff',
           cursor: nextDisabled ? 'not-allowed' : 'pointer',
           minHeight: '48px',
-          boxShadow: nextDisabled ? 'none' : '0 2px 10px rgba(65,117,252,0.25)',
+          boxShadow: nextDisabled ? 'none' : '0 2px 10px rgba(232,147,26,0.25)',
           WebkitTapHighlightColor: 'transparent',
         }}
       >

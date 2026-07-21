@@ -44,10 +44,10 @@ function Row({ label, value }) {
 }
 
 const SERVICE_COLORS = {
-  consulting:  { bg: '#f0f4ff', text: '#4175fc' },
-  supervision: { bg: '#fff7ed', text: '#f97316' },
-  management:  { bg: '#f0fdf4', text: '#16a34a' },
-  bim:         { bg: '#faf5ff', text: '#9333ea' },
+  consulting:  { bg: '#FEF3E2', text: '#E8931A' },
+  supervision: { bg: '#FEF3E2', text: '#E8931A' },
+  management:  { bg: '#F4F3EE', text: '#0D1B2A' },
+  bim:         { bg: '#F4F3EE', text: '#0D1B2A' },
 };
 
 const SERVICE_ICONS = {
@@ -95,12 +95,12 @@ function EditSectionModal({ data, onClose, onNavigateTo }) {
             style={{
               display: 'flex', alignItems: 'center', gap: '10px',
               padding: '13px 14px', borderRadius: '12px',
-              border: '1.5px solid #e2e5ed', backgroundColor: '#fafbff',
+              border: '1.5px solid #E8931A', backgroundColor: '#FEF3E2',
               cursor: 'pointer', width: '100%', textAlign: 'right',
             }}
           >
             <span style={{ fontSize: '18px' }}>📌</span>
-            <span style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: '#4175fc', textAlign: 'right' }}>
+            <span style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: '#E8931A', textAlign: 'right' }}>
               בחירת שירותים אחרים
             </span>
           </button>
@@ -184,7 +184,7 @@ export default function Step4_Review({ data, onBack, onGenerate, onNavigateTo, d
         className="rounded-2xl mb-3"
         style={{ backgroundColor: '#fff', boxShadow: '0 1px 8px rgba(0,0,0,0.07)', border: '1px solid #eaecf2', padding: '16px' }}
       >
-        <p className="text-xs font-bold mb-2" style={{ color: '#4175fc' }}>פרטים כלליים</p>
+        <p className="text-xs font-bold mb-2" style={{ color: '#0D1B2A' }}>פרטים כלליים</p>
         <Row label="שם"           value={data.fullName} />
         <Row label="חברה"         value={data.company} />
         <Row label="טלפון"        value={data.phone} />
@@ -270,8 +270,8 @@ export default function Step4_Review({ data, onBack, onGenerate, onNavigateTo, d
               onClick={() => setConfirmed(true)}
               className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all"
               style={{
-                border: `2px solid ${confirmed === true ? '#4175fc' : '#e2e5ed'}`,
-                backgroundColor: confirmed === true ? '#4175fc' : '#fff',
+                border: `2px solid ${confirmed === true ? '#E8931A' : '#e2e5ed'}`,
+                backgroundColor: confirmed === true ? '#E8931A' : '#fff',
                 color: confirmed === true ? '#fff' : '#374151',
                 minHeight: '44px',
               }}
@@ -300,7 +300,7 @@ export default function Step4_Review({ data, onBack, onGenerate, onNavigateTo, d
           <button
             onClick={() => setShowEditModal(true)}
             className="w-full py-3.5 rounded-xl text-sm font-bold"
-            style={{ border: '2px solid #4175fc', color: '#4175fc', backgroundColor: '#f0f4ff', minHeight: '50px' }}
+            style={{ border: '2px solid #E8931A', color: '#E8931A', backgroundColor: '#FEF3E2', minHeight: '50px' }}
           >
             חזרה לתיקון שדות
           </button>
@@ -310,7 +310,7 @@ export default function Step4_Review({ data, onBack, onGenerate, onNavigateTo, d
           <button
             onClick={onGenerate}
             className="w-full py-3.5 rounded-xl text-sm font-bold"
-            style={{ backgroundColor: '#4175fc', color: '#fff', boxShadow: '0 4px 14px rgba(65,117,252,0.35)', minHeight: '50px' }}
+            style={{ backgroundColor: '#E8931A', color: '#fff', boxShadow: '0 4px 14px rgba(232,147,26,0.35)', minHeight: '50px' }}
           >
             הפק הצעת מחיר ↓
           </button>

@@ -60,7 +60,7 @@ export default function Step5_Success({ data, onReset }) {
           <div className="flex flex-col items-center gap-6 text-center">
             <div
               className="w-20 h-20 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: '#f0f4ff' }}
+              style={{ backgroundColor: '#FEF3E2' }}
             >
               <div className="spinner" />
             </div>
@@ -120,9 +120,9 @@ export default function Step5_Success({ data, onReset }) {
               disabled={loading}
               className="w-full py-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2"
               style={{
-                backgroundColor: loading ? '#e5e7eb' : '#4175fc',
+                backgroundColor: loading ? '#e5e7eb' : '#E8931A',
                 color:           loading ? '#9ca3af' : '#fff',
-                boxShadow:       loading ? 'none' : '0 4px 14px rgba(65,117,252,0.3)',
+                boxShadow:       loading ? 'none' : '0 4px 14px rgba(232,147,26,0.3)',
                 minHeight: '52px',
                 cursor: loading ? 'not-allowed' : 'pointer',
               }}

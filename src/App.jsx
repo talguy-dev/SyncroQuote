@@ -12,12 +12,12 @@ import IntroScreen from './steps/IntroScreen';
 import { SERVICE_QUESTIONS } from './data/flowConfig';
 
 const PHASE_META = {
-  contact:     { label: 'פרטים',  color: '#6b7280' },
-  consulting:  { label: 'ייעוץ',  color: '#4175fc' },
-  supervision: { label: 'פיקוח', color: '#f97316' },
-  management:  { label: 'ניהול',  color: '#16a34a' },
-  bim:         { label: 'BIM',    color: '#9333ea' },
-  closing:     { label: 'סיכום', color: '#6b7280' },
+  contact:     { label: 'פרטים',  color: '#7a8a9a' },
+  consulting:  { label: 'ייעוץ',  color: '#E8931A' },
+  supervision: { label: 'פיקוח', color: '#E8931A' },
+  management:  { label: 'ניהול',  color: '#E8931A' },
+  bim:         { label: 'BIM',    color: '#E8931A' },
+  closing:     { label: 'סיכום', color: '#0D1B2A' },
 };
 
 function buildScreenList(selectedServices) {
@@ -171,19 +171,17 @@ function Header() {
   return (
     <header
       className="flex items-center justify-between px-5 py-3.5 shrink-0"
-      style={{ backgroundColor: '#101218' }}
+      style={{ backgroundColor: '#0D1B2A' }}
     >
-      <div
-        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-        style={{ backgroundColor: '#4175fc' }}
-      >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="2" y="2" width="5" height="5" rx="1" fill="white" />
-          <rect x="9" y="2" width="5" height="5" rx="1" fill="white" opacity="0.6" />
-          <rect x="2" y="9" width="5" height="5" rx="1" fill="white" opacity="0.6" />
-          <rect x="9" y="9" width="5" height="5" rx="1" fill="white" />
-        </svg>
-      </div>
+      {/* Syncro logo mark */}
+      <svg width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" rx="16" fill="#0D1B2A" />
+        <g fill="none" stroke="#E8931A" strokeWidth="6" strokeLinecap="round">
+          <circle cx="50" cy="50" r="22" strokeDasharray="110.6 27.6" transform="rotate(180 50 50)" />
+          <circle cx="50" cy="50" r="14.5" strokeDasharray="54.6 36.4" transform="rotate(180 50 50)" />
+          <circle cx="50" cy="50" r="7" strokeDasharray="18.2 27.3" transform="rotate(180 50 50)" />
+        </g>
+      </svg>
       <div className="flex flex-col items-end gap-0.5">
         <span className="text-sm font-bold tracking-wide text-white">SYNCRO</span>
         <span

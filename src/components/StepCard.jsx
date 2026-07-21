@@ -16,9 +16,9 @@ export default function StepCard({ children, direction = 'forward' }) {
       ref={ref}
       className="rounded-2xl w-full"
       style={{
-        backgroundColor: '#ffffff',
-        boxShadow: '0 1px 8px rgba(0,0,0,0.07)',
-        border: '1px solid #eaecf2',
+        backgroundColor: '#FFFFFF',
+        boxShadow: '0 1px 8px rgba(13,27,42,0.07)',
+        border: '1px solid rgba(13,27,42,0.1)',
         padding: '22px 18px',
       }}
     >

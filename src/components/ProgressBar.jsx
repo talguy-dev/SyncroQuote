@@ -3,10 +3,10 @@ export default function ProgressBar({ phases, currentPhaseId, phaseProgress, pha
   const pct = phaseProgress.total > 0
     ? Math.round((phaseProgress.current / phaseProgress.total) * 100)
     : 0;
-  const currentColor = phaseMeta[currentPhaseId]?.color || '#4175fc';
+  const currentColor = phaseMeta[currentPhaseId]?.color || '#E8931A';
 
   return (
-    <div className="px-4 pt-3 pb-3 shrink-0" style={{ backgroundColor: '#f4f6fb' }}>
+    <div className="px-4 pt-3 pb-3 shrink-0" style={{ backgroundColor: '#EFF1F5', borderBottom: '1px solid rgba(13,27,42,0.08)' }}>
       <div className="flex items-center gap-1 mb-2.5 overflow-x-auto">
         {phases.map((phaseId, i) => {
           const meta = phaseMeta[phaseId] || {};

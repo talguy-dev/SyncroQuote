@@ -49,7 +49,7 @@ export default function IntroScreen({ onStart }) {
         width: '100%',
         height: '100dvh',
         overflow: 'hidden',
-        backgroundColor: '#101218',
+        backgroundColor: '#0D1B2A',
       }}
     >
       {/* ── Background video ── */}
@@ -83,7 +83,7 @@ export default function IntroScreen({ onStart }) {
           position: 'absolute',
           inset: 0,
           background:
-            'linear-gradient(to bottom, rgba(16,18,24,0.55) 0%, rgba(16,18,24,0.2) 45%, rgba(16,18,24,0.88) 100%)',
+            'linear-gradient(to bottom, rgba(13,27,42,0.55) 0%, rgba(13,27,42,0.2) 45%, rgba(13,27,42,0.88) 100%)',
         }}
       />
 
@@ -101,28 +101,40 @@ export default function IntroScreen({ onStart }) {
         }}
       >
         {/* Logo */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-          <div
-            style={{
-              fontSize: '26px',
-              fontWeight: '800',
-              color: '#fff',
-              letterSpacing: '3px',
-              lineHeight: 1,
-            }}
-          >
-            SYNCRO
-          </div>
-          <div
-            style={{
-              fontSize: '9.5px',
-              color: 'rgba(255,255,255,0.6)',
-              letterSpacing: '2.5px',
-              textTransform: 'uppercase',
-              fontWeight: '500',
-            }}
-          >
-            Engineering Intelligence
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <svg width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100" height="100" rx="16" fill="rgba(255,255,255,0.1)" />
+            <g fill="none" stroke="#E8931A" strokeWidth="6" strokeLinecap="round">
+              <circle cx="50" cy="50" r="22" strokeDasharray="110.6 27.6" transform="rotate(180 50 50)" />
+              <circle cx="50" cy="50" r="14.5" strokeDasharray="54.6 36.4" transform="rotate(180 50 50)" />
+              <circle cx="50" cy="50" r="7" strokeDasharray="18.2 27.3" transform="rotate(180 50 50)" />
+            </g>
+          </svg>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <div
+              style={{
+                fontSize: '22px',
+                fontWeight: '700',
+                color: '#fff',
+                letterSpacing: '3px',
+                lineHeight: 1,
+                fontFamily: "'IBM Plex Sans', sans-serif",
+              }}
+            >
+              SYNCRO
+            </div>
+            <div
+              style={{
+                fontSize: '8.5px',
+                color: 'rgba(255,255,255,0.55)',
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                fontWeight: '400',
+                fontFamily: "'IBM Plex Sans', sans-serif",
+              }}
+            >
+              Engineering Intelligence
+            </div>
           </div>
         </div>
 
@@ -162,13 +174,13 @@ export default function IntroScreen({ onStart }) {
               width: '100%',
               padding: '18px',
               borderRadius: '16px',
-              backgroundColor: '#4175fc',
+              backgroundColor: '#E8931A',
               color: '#fff',
               fontSize: '16px',
               fontWeight: '700',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 8px 28px rgba(65,117,252,0.5)',
+              boxShadow: '0 8px 28px rgba(232,147,26,0.5)',
               minHeight: '56px',
               textAlign: 'center',
               letterSpacing: '0.3px',

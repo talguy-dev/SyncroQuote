@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import './index.css';
 import ProgressBar from './components/ProgressBar';
 import {
@@ -9,6 +10,9 @@ import Step3_Closing from './steps/Step3_Closing';
 import Step4_Review from './steps/Step4_Review';
 import Step5_Success from './steps/Step5_Success';
 import IntroScreen from './steps/IntroScreen';
+import QuotePDFTemplate from './components/QuotePDFTemplate';
+import { generatePdfBlob } from './utils/generatePdf';
+import { uploadToDrive } from './utils/uploadDrive';
 import { SERVICE_QUESTIONS } from './data/flowConfig';
 
 const PHASE_META = {
@@ -64,15 +68,17 @@ function getPhaseProgress(screens, screenIndex) {
 }
 
 export default function App() {
-  const [showIntro, setShowIntro] = useState(true);
-  const [formData, setFormData] = useState({});
+  const pdfRef = useRef(null);
+  const [showIntro, setShowIntro]     = useState(true);
+  const [formData, setFormData]       = useState({});
   const [screenIndex, setScreenIndex] = useState(0);
-  const [direction, setDirection] = useState('forward');
+  const [direction, setDirection]     = useState('forward');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [uploadState, setUploadState] = useState('idle'); // idle | uploading | done | error
+  const [uploadError, setUploadError] = useState('');
 
   const screens = buildScreenList(formData.selectedServices);
   const current = screens[screenIndex];
-  const total = screens.length;
 
   const goNext = useCallback(() => {
     setDirection('forward');
@@ -96,15 +102,33 @@ export default function App() {
     }
   }, [screens]);
 
-  const handleGenerate = () => setShowSuccess(true);
+  const handleGenerate = async () => {
+    setShowSuccess(true);
+    setUploadState('uploading');
+    setUploadError('');
+    try {
+      const blob      = await generatePdfBlob(pdfRef.current);
+      const userFiles = (formData.documentSlots || []).flat();
+      await uploadToDrive(blob, userFiles, formData);
+      setUploadState('done');
+    } catch (err) {
+      console.error('[handleGenerate]', err);
+      setUploadError(err.message || 'שגיאה לא ידועה');
+      setUploadState('error');
+    }
+  };
 
   const handleReset = () => {
     setFormData({});
     setScreenIndex(0);
     setDirection('forward');
     setShowSuccess(false);
+    setUploadState('idle');
+    setUploadError('');
     setShowIntro(true);
   };
+
+  const handleRetry = () => handleGenerate();
 
   if (showIntro) {
     return <IntroScreen onStart={() => setShowIntro(false)} />;
@@ -112,12 +136,21 @@ export default function App() {
 
   if (showSuccess) {
     return (
-      <div className="flex flex-col flex-1">
-        <Header />
-        <div className="flex-1 flex flex-col">
-          <Step5_Success />
+      <>
+        {/* Off-screen PDF template — must stay mounted for retry */}
+        {createPortal(
+          <div style={{ position: 'fixed', top: 0, left: '-820px', width: '794px', zIndex: -1, pointerEvents: 'none' }}>
+            <QuotePDFTemplate ref={pdfRef} data={formData} />
+          </div>,
+          document.body,
+        )}
+        <div className="flex flex-col flex-1">
+          <Header />
+          <div className="flex-1 flex flex-col">
+            <Step5_Success uploadState={uploadState} uploadError={uploadError} onRetry={handleRetry} />
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -129,41 +162,49 @@ export default function App() {
     direction,
   };
 
-  const renderScreen = () => {
-    switch (current?.type) {
-      case 'step1_1': return <Screen1_1 {...props} />;
-      case 'step1_2': return <Screen1_2 {...props} />;
-      case 'step1_3': return <Screen1_3 {...props} />;
-      case 'step1_4': return <Screen1_4 {...props} />;
-      case 'step1_5': return <Screen1_5 {...props} />;
-      case 'step2':   return (
-        <Step2_Services
-          {...props}
-          serviceId={current.serviceId}
-          questionIndex={current.questionIndex}
-        />
-      );
-      case 'step3': return <Step3_Closing {...props} />;
-      case 'step4': return (
-        <Step4_Review {...props} onBack={goBack} onGenerate={handleGenerate} onNavigateTo={goToSection} />
-      );
-      default: return null;
-    }
-  };
-
   return (
-    <div className="flex flex-col flex-1">
-      <Header />
-      <ProgressBar
-        phases={getPhaseList(screens)}
-        currentPhaseId={current?.phaseId}
-        phaseProgress={getPhaseProgress(screens, screenIndex)}
-        phaseMeta={PHASE_META}
-      />
-      <main className="flex-1 px-4 py-5 overflow-y-auto">
-        {renderScreen()}
-      </main>
-    </div>
+    <>
+      {/* Off-screen PDF template — always ready */}
+      {createPortal(
+        <div style={{ position: 'fixed', top: 0, left: '-820px', width: '794px', zIndex: -1, pointerEvents: 'none' }}>
+          <QuotePDFTemplate ref={pdfRef} data={formData} />
+        </div>,
+        document.body,
+      )}
+
+      <div className="flex flex-col flex-1">
+        <Header />
+        <ProgressBar
+          phases={getPhaseList(screens)}
+          currentPhaseId={current?.phaseId}
+          phaseProgress={getPhaseProgress(screens, screenIndex)}
+          phaseMeta={PHASE_META}
+        />
+        <main className="flex-1 px-4 py-5 overflow-y-auto">
+          {(() => {
+            switch (current?.type) {
+              case 'step1_1': return <Screen1_1 {...props} />;
+              case 'step1_2': return <Screen1_2 {...props} />;
+              case 'step1_3': return <Screen1_3 {...props} />;
+              case 'step1_4': return <Screen1_4 {...props} />;
+              case 'step1_5': return <Screen1_5 {...props} />;
+              case 'step2':   return (
+                <Step2_Services
+                  {...props}
+                  serviceId={current.serviceId}
+                  questionIndex={current.questionIndex}
+                />
+              );
+              case 'step3': return <Step3_Closing {...props} />;
+              case 'step4': return (
+                <Step4_Review {...props} onBack={goBack} onGenerate={handleGenerate} onNavigateTo={goToSection} />
+              );
+              default: return null;
+            }
+          })()}
+        </main>
+      </div>
+    </>
   );
 }
 
@@ -173,7 +214,6 @@ function Header() {
       className="flex items-center justify-between px-5 py-3.5 shrink-0"
       style={{ backgroundColor: '#0D1B2A' }}
     >
-      {/* Syncro logo mark */}
       <svg width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <rect width="100" height="100" rx="16" fill="#0D1B2A" />
         <g fill="none" stroke="#E8931A" strokeWidth="6" strokeLinecap="round">
@@ -184,10 +224,7 @@ function Header() {
       </svg>
       <div className="flex flex-col items-end gap-0.5">
         <span className="text-sm font-bold tracking-wide text-white">SYNCRO</span>
-        <span
-          className="text-[9px] tracking-widest uppercase"
-          style={{ color: '#9ca3af' }}
-        >
+        <span className="text-[9px] tracking-widest uppercase" style={{ color: '#9ca3af' }}>
           Engineering Intelligence
         </span>
       </div>

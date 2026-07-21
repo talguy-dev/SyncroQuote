@@ -226,16 +226,17 @@ export default function Step4_Review({ data, onBack, onGenerate, onNavigateTo, d
       })}
 
       {/* ── קבצים מצורפים ── */}
-      {(data.attachments || []).length > 0 && (
+      {(data.documentSlots || []).flat().length > 0 && (
         <div
           className="rounded-2xl mb-3"
           style={{ backgroundColor: '#fff', boxShadow: '0 1px 8px rgba(13,27,42,0.07)', border: '1px solid rgba(13,27,42,0.1)', padding: '16px' }}
         >
           <p className="text-xs font-bold mb-2" style={{ color: '#0D1B2A' }}>קבצים מצורפים</p>
-          {data.attachments.map((file, i) => (
-            <div key={i} className="flex items-center gap-2 py-1.5" style={{ borderBottom: i < data.attachments.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
+          {(data.documentSlots || []).flat().map((file, i, arr) => (
+            <div key={i} className="flex items-center gap-2 py-1.5" style={{ borderBottom: i < arr.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M2 2.5A1.5 1.5 0 013.5 1h5.086A1.5 1.5 0 019.647 1.44l2.914 2.914A1.5 1.5 0 0113 5.414V11.5A1.5 1.5 0 0111.5 13h-8A1.5 1.5 0 012 11.5v-9z" stroke="#9ca3af" strokeWidth="1.2"/>
+                <path d="M2.5 1.5h6l3 3v8a.5.5 0 01-.5.5h-8.5a.5.5 0 01-.5-.5v-10.5a.5.5 0 01.5-.5z" stroke="#9ca3af" strokeWidth="1.2"/>
+                <path d="M8.5 1.5v3.5h3" stroke="#9ca3af" strokeWidth="1.2"/>
               </svg>
               <span className="text-xs" style={{ color: '#6b7280' }}>{file.name}</span>
             </div>

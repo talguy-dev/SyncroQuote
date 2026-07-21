@@ -115,7 +115,7 @@ export default function App() {
       <div className="flex flex-col flex-1">
         <Header />
         <div className="flex-1 flex flex-col">
-          <Step5_Success data={formData} onReset={handleReset} />
+          <Step5_Success />
         </div>
       </div>
     );

@@ -20,7 +20,6 @@ function validateData(data) {
 function displayAnswer(answer, otherText) {
   if (!answer && answer !== 0) return '—';
   if (typeof answer === 'object') {
-    // chips_with_text
     if (answer.option) {
       return answer.text ? `${answer.option}: ${answer.text}` : answer.option;
     }
@@ -36,7 +35,7 @@ function Row({ label, value }) {
       style={{ borderBottom: '1px solid #f3f4f6' }}
     >
       <span className="text-xs shrink-0 ml-3" style={{ color: '#9ca3af' }}>{label}</span>
-      <span className="text-xs font-medium text-right" style={{ color: '#101218' }}>
+      <span className="text-xs font-medium text-right" style={{ color: '#0D1B2A' }}>
         {value || '—'}
       </span>
     </div>
@@ -65,15 +64,13 @@ function EditSectionModal({ data, onClose, onNavigateTo }) {
   return createPortal(
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-        {/* drag handle */}
         <div style={{ width: '40px', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px', margin: '0 auto 18px' }} />
 
-        <p style={{ fontWeight: '700', fontSize: '15px', color: '#101218', marginBottom: '14px', textAlign: 'right' }}>
+        <p style={{ fontWeight: '700', fontSize: '15px', color: '#0D1B2A', marginBottom: '14px', textAlign: 'right' }}>
           באיזה חלק תרצו לערוך?
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {/* פרטים כלליים */}
           <button
             onClick={() => handleSelect('general')}
             style={{
@@ -89,7 +86,6 @@ function EditSectionModal({ data, onClose, onNavigateTo }) {
             </span>
           </button>
 
-          {/* בחירת שירותים */}
           <button
             onClick={() => handleSelect('services')}
             style={{
@@ -105,7 +101,6 @@ function EditSectionModal({ data, onClose, onNavigateTo }) {
             </span>
           </button>
 
-          {/* שירות ספציפי */}
           {selectedServices.filter((id) => (SERVICE_QUESTIONS[id] || []).length > 0).length > 0 && (
             <>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '4px 0 2px' }}>
@@ -134,7 +129,7 @@ function EditSectionModal({ data, onClose, onNavigateTo }) {
                       }}
                     >
                       <span style={{ fontSize: '18px' }}>{SERVICE_ICONS[id]}</span>
-                      <span style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: colors.text || '#101218', textAlign: 'right' }}>
+                      <span style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: colors.text || '#0D1B2A', textAlign: 'right' }}>
                         {svc?.label || id}
                       </span>
                     </button>
@@ -162,7 +157,6 @@ function EditSectionModal({ data, onClose, onNavigateTo }) {
 }
 
 export default function Step4_Review({ data, onBack, onGenerate, onNavigateTo, direction }) {
-  const [confirmed, setConfirmed] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const missing = validateData(data);
   const hasMissing = missing.length > 0;
@@ -182,7 +176,7 @@ export default function Step4_Review({ data, onBack, onGenerate, onNavigateTo, d
       {/* ── פרטים כלליים ── */}
       <div
         className="rounded-2xl mb-3"
-        style={{ backgroundColor: '#fff', boxShadow: '0 1px 8px rgba(0,0,0,0.07)', border: '1px solid #eaecf2', padding: '16px' }}
+        style={{ backgroundColor: '#fff', boxShadow: '0 1px 8px rgba(13,27,42,0.07)', border: '1px solid rgba(13,27,42,0.1)', padding: '16px' }}
       >
         <p className="text-xs font-bold mb-2" style={{ color: '#0D1B2A' }}>פרטים כלליים</p>
         <Row label="שם"           value={data.fullName} />
@@ -207,14 +201,11 @@ export default function Step4_Review({ data, onBack, onGenerate, onNavigateTo, d
           <div
             key={svcId}
             className="rounded-2xl mb-3"
-            style={{ backgroundColor: '#fff', boxShadow: '0 1px 8px rgba(0,0,0,0.07)', border: '1px solid #eaecf2', padding: '16px' }}
+            style={{ backgroundColor: '#fff', boxShadow: '0 1px 8px rgba(13,27,42,0.07)', border: '1px solid rgba(13,27,42,0.1)', padding: '16px' }}
           >
             <div className="flex items-center gap-2 mb-2">
               <span>{SERVICE_ICONS[svcId]}</span>
-              <p
-                className="text-xs font-bold"
-                style={{ color: colors.text }}
-              >
+              <p className="text-xs font-bold" style={{ color: colors.text }}>
                 {svc?.label}
               </p>
             </div>
@@ -222,18 +213,35 @@ export default function Step4_Review({ data, onBack, onGenerate, onNavigateTo, d
             {questions.map((q) => {
               const raw = answers[q.id];
               const otherTxt = answers[`${q.id}_other`] || '';
-              const display = displayAnswer(raw, otherTxt);
               return (
                 <Row
                   key={q.id}
                   label={q.question.length > 30 ? q.question.slice(0, 30) + '…' : q.question}
-                  value={display}
+                  value={displayAnswer(raw, otherTxt)}
                 />
               );
             })}
           </div>
         );
       })}
+
+      {/* ── קבצים מצורפים ── */}
+      {(data.attachments || []).length > 0 && (
+        <div
+          className="rounded-2xl mb-3"
+          style={{ backgroundColor: '#fff', boxShadow: '0 1px 8px rgba(13,27,42,0.07)', border: '1px solid rgba(13,27,42,0.1)', padding: '16px' }}
+        >
+          <p className="text-xs font-bold mb-2" style={{ color: '#0D1B2A' }}>קבצים מצורפים</p>
+          {data.attachments.map((file, i) => (
+            <div key={i} className="flex items-center gap-2 py-1.5" style={{ borderBottom: i < data.attachments.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 2.5A1.5 1.5 0 013.5 1h5.086A1.5 1.5 0 019.647 1.44l2.914 2.914A1.5 1.5 0 0113 5.414V11.5A1.5 1.5 0 0111.5 13h-8A1.5 1.5 0 012 11.5v-9z" stroke="#9ca3af" strokeWidth="1.2"/>
+              </svg>
+              <span className="text-xs" style={{ color: '#6b7280' }}>{file.name}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ── שדות חסרים ── */}
       {hasMissing && (
@@ -244,11 +252,7 @@ export default function Step4_Review({ data, onBack, onGenerate, onNavigateTo, d
           <p className="text-xs font-bold mb-2" style={{ color: '#dc2626' }}>⚠️ שדות חסרים:</p>
           <div className="flex flex-wrap gap-1.5">
             {missing.map((m) => (
-              <span
-                key={m}
-                className="text-xs px-2 py-0.5 rounded-full"
-                style={{ backgroundColor: '#fee2e2', color: '#dc2626' }}
-              >
+              <span key={m} className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#fee2e2', color: '#dc2626' }}>
                 {m}
               </span>
             ))}
@@ -257,78 +261,43 @@ export default function Step4_Review({ data, onBack, onGenerate, onNavigateTo, d
       )}
 
       {/* ── אישור ── */}
-      {!hasMissing && (
-        <div
-          className="rounded-2xl mb-3 p-4"
-          style={{ backgroundColor: '#fff', border: '1px solid #eaecf2' }}
-        >
-          <p className="text-sm font-semibold mb-3" style={{ color: '#101218' }}>
-            האם כל הפרטים תקינים?
-          </p>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setConfirmed(true)}
-              className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all"
-              style={{
-                border: `2px solid ${confirmed === true ? '#E8931A' : '#e2e5ed'}`,
-                backgroundColor: confirmed === true ? '#E8931A' : '#fff',
-                color: confirmed === true ? '#fff' : '#374151',
-                minHeight: '44px',
-              }}
-            >
-              כן, הכל תקין ✓
-            </button>
-            <button
-              onClick={() => setShowEditModal(true)}
-              className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all"
-              style={{
-                border: `2px solid ${confirmed === false ? '#ef4444' : '#e2e5ed'}`,
-                backgroundColor: confirmed === false ? '#fff5f5' : '#fff',
-                color: confirmed === false ? '#dc2626' : '#374151',
-                minHeight: '44px',
-              }}
-            >
-              יש לתקן
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ── כפתורי פעולה ── */}
-      <div className="flex flex-col gap-2">
-        {(hasMissing || confirmed === false) && (
-          <button
-            onClick={() => setShowEditModal(true)}
-            className="w-full py-3.5 rounded-xl text-sm font-bold"
-            style={{ border: '2px solid #E8931A', color: '#E8931A', backgroundColor: '#FEF3E2', minHeight: '50px' }}
-          >
-            חזרה לתיקון שדות
-          </button>
-        )}
-
-        {!hasMissing && confirmed === true && (
+      <div
+        className="rounded-2xl mb-3 p-4"
+        style={{ backgroundColor: '#fff', border: '1px solid rgba(13,27,42,0.1)', boxShadow: '0 1px 8px rgba(13,27,42,0.07)' }}
+      >
+        <p className="text-sm font-semibold mb-3" style={{ color: '#0D1B2A' }}>
+          האם כל הפרטים תקינים?
+        </p>
+        <div className="flex gap-2">
           <button
             onClick={onGenerate}
-            className="w-full py-3.5 rounded-xl text-sm font-bold"
-            style={{ backgroundColor: '#E8931A', color: '#fff', boxShadow: '0 4px 14px rgba(232,147,26,0.35)', minHeight: '50px' }}
+            disabled={hasMissing}
+            className="flex-1 py-3 rounded-xl text-sm font-bold transition-all"
+            style={{
+              backgroundColor: hasMissing ? '#e5e7eb' : '#E8931A',
+              color: hasMissing ? '#9ca3af' : '#fff',
+              cursor: hasMissing ? 'not-allowed' : 'pointer',
+              minHeight: '48px',
+              boxShadow: hasMissing ? 'none' : '0 4px 14px rgba(232,147,26,0.3)',
+              border: 'none',
+            }}
           >
-            הפק הצעת מחיר ↓
+            כן, הכל תקין ✓
           </button>
-        )}
-
-        {!hasMissing && confirmed === null && (
-          <button disabled className="w-full py-3.5 rounded-xl text-sm font-bold" style={{ backgroundColor: '#e5e7eb', color: '#9ca3af', minHeight: '50px', cursor: 'not-allowed' }}>
-            הפק הצעת מחיר ↓
+          <button
+            onClick={() => setShowEditModal(true)}
+            className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all"
+            style={{
+              border: '2px solid #e2e5ed',
+              backgroundColor: '#fff',
+              color: '#374151',
+              minHeight: '48px',
+              cursor: 'pointer',
+            }}
+          >
+            יש לתקן
           </button>
-        )}
-
-        <button
-          onClick={onBack}
-          className="w-full py-2 rounded-xl text-xs font-medium"
-          style={{ color: '#9ca3af', backgroundColor: 'transparent' }}
-        >
-          חזרה
-        </button>
+        </div>
       </div>
 
       {showEditModal && (

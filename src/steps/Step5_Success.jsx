@@ -1,175 +1,53 @@
-import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { generateQuotePdf }  from '../utils/generatePdf';
-import QuotePDFTemplate      from '../components/QuotePDFTemplate';
+import { useEffect, useState } from 'react';
 
-function buildFilename(company) {
-  const date    = new Date().toLocaleDateString('he-IL').replace(/\//g, '-');
-  const co      = company?.trim() ? `_${company.trim()}` : '';
-  return `הצעת מחיר${co}_${date}.pdf`;
-}
-
-export default function Step5_Success({ data, onReset }) {
-  const pdfRef = useRef(null);
-  const [phase,   setPhase]   = useState('generating');
-  const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState(null);
+export default function Step5_Success() {
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setPhase('ready'), 2200);
+    const t = setTimeout(() => setVisible(true), 80);
     return () => clearTimeout(t);
   }, []);
 
-  const handlePdf = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      await generateQuotePdf(pdfRef.current, buildFilename(data.company));
-    } catch (e) {
-      console.error(e);
-      setError('שגיאה בהפקת PDF. נסו שוב.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <>
-      {/* ── Hidden PDF template rendered directly on body ── */}
-      {createPortal(
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: '-820px',   // off-screen left, still in DOM with real dimensions
-            width: '794px',
-            zIndex: -1,
-            pointerEvents: 'none',
-          }}
-        >
-          <QuotePDFTemplate ref={pdfRef} data={data} />
-        </div>,
-        document.body,
-      )}
+    <div
+      className="flex-1 flex flex-col items-center justify-center px-6 py-12"
+      style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease' }}
+    >
+      {/* Syncro logo mark */}
+      <svg width="72" height="72" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style={{ marginBottom: '28px' }}>
+        <rect width="100" height="100" rx="20" fill="#0D1B2A" />
+        <g fill="none" stroke="#E8931A" strokeWidth="6" strokeLinecap="round">
+          <circle cx="50" cy="50" r="22" strokeDasharray="110.6 27.6" transform="rotate(180 50 50)" />
+          <circle cx="50" cy="50" r="14.5" strokeDasharray="54.6 36.4" transform="rotate(180 50 50)" />
+          <circle cx="50" cy="50" r="7" strokeDasharray="18.2 27.3" transform="rotate(180 50 50)" />
+        </g>
+      </svg>
 
-      {/* ── Visible UI ── */}
-      <div className="flex-1 flex flex-col items-center justify-center px-5 py-10 anim-fade">
+      <h1
+        className="text-2xl font-bold text-center mb-3"
+        style={{ color: '#0D1B2A', lineHeight: 1.3 }}
+      >
+        תודה על מילוי הטופס!
+      </h1>
 
-        {/* Generating animation */}
-        {phase === 'generating' && (
-          <div className="flex flex-col items-center gap-6 text-center">
-            <div
-              className="w-20 h-20 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: '#FEF3E2' }}
-            >
-              <div className="spinner" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold mb-1" style={{ color: '#101218' }}>
-                מכין סיכום שאלון...
-              </h2>
-              <p className="text-sm" style={{ color: '#9ca3af' }}>מעבד את הנתונים</p>
-            </div>
-            <div className="dot-pulse flex items-center gap-1">
-              <span /><span /><span />
-            </div>
-          </div>
-        )}
+      <p
+        className="text-sm text-center"
+        style={{ color: '#7a8a9a', lineHeight: 1.7, maxWidth: '260px' }}
+      >
+        צוות Syncro קיבל את הפנייה שלך
+        <br />
+        וייצור איתך קשר בהקדם האפשרי.
+      </p>
 
-        {/* Ready card */}
-        {phase === 'ready' && (
-          <div
-            className="w-full rounded-2xl p-6 flex flex-col items-center gap-4 text-center"
-            style={{
-              backgroundColor: '#fff',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-              border: '1px solid #eaecf2',
-            }}
-          >
-            {/* Icon */}
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center text-3xl"
-              style={{ backgroundColor: '#f0fdf4' }}
-            >
-              ✅
-            </div>
-
-            {/* Title */}
-            <div>
-              <h2 className="text-lg font-bold mb-0.5" style={{ color: '#101218' }}>
-                הסיכום מוכן!
-              </h2>
-              <p className="text-xs" style={{ color: '#9ca3af' }}>
-                לחצו להורדת סיכום השאלון כ-PDF
-              </p>
-            </div>
-
-            {/* Error */}
-            {error && (
-              <p
-                className="text-xs w-full px-4 py-2.5 rounded-xl"
-                style={{ backgroundColor: '#fff5f5', color: '#dc2626', border: '1px solid #fecaca' }}
-              >
-                {error}
-              </p>
-            )}
-
-            {/* ── PDF button ── */}
-            <button
-              onClick={handlePdf}
-              disabled={loading}
-              className="w-full py-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2"
-              style={{
-                backgroundColor: loading ? '#e5e7eb' : '#E8931A',
-                color:           loading ? '#9ca3af' : '#fff',
-                boxShadow:       loading ? 'none' : '0 4px 14px rgba(232,147,26,0.3)',
-                minHeight: '52px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-              }}
-            >
-              {loading ? (
-                <>
-                  <span
-                    style={{
-                      width: '16px', height: '16px',
-                      border: '2px solid rgba(255,255,255,0.4)',
-                      borderTopColor: '#fff',
-                      borderRadius: '50%',
-                      animation: 'spin 0.8s linear infinite',
-                      display: 'inline-block',
-                      flexShrink: 0,
-                    }}
-                  />
-                  מייצר PDF...
-                </>
-              ) : (
-                <>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M3 13h10M8 3v7M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  הורד סיכום שאלון PDF
-                </>
-              )}
-            </button>
-
-            {/* Reset */}
-            <button
-              onClick={onReset}
-              disabled={!!loading}
-              className="w-full py-2.5 rounded-xl text-xs font-medium"
-              style={{
-                border:          '2px solid #e2e5ed',
-                color:           '#9ca3af',
-                backgroundColor: '#f9fafb',
-                minHeight: '44px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-              }}
-            >
-              + צור הצעת מחיר חדשה
-            </button>
-          </div>
-        )}
-      </div>
-    </>
+      <div
+        style={{
+          marginTop: '40px',
+          width: '48px',
+          height: '2px',
+          backgroundColor: '#E8931A',
+          borderRadius: '2px',
+        }}
+      />
+    </div>
   );
 }
